@@ -1,0 +1,27 @@
+import moment from "moment";
+
+export default defineNuxtPlugin((nuxtApp) => {
+
+    return {
+
+        provide: {
+
+            toThousands: (number) => {
+
+                return number.toString().split('.')
+                .map((item, index) => index === 0 ? item.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : item)
+                .join('.');
+                
+            },
+
+            dateformat: (timestamp, formation = 'YYYY-MM-DD') => {
+                
+                return moment(timestamp).format(formation);
+            
+            },
+
+        }
+
+    }
+
+});

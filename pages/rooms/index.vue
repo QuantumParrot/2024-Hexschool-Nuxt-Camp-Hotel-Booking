@@ -4,6 +4,8 @@ import { Icon } from '@iconify/vue';
 
 const config = useRuntimeConfig();
 
+const { $toThousands } = useNuxtApp();
+
 const { data } = await useAsyncData(() => {
 
     return $fetch('api/v1/rooms', {
@@ -126,7 +128,7 @@ const { data } = await useAsyncData(() => {
                                     <div
                                         class="d-flex justify-content-between align-items-center
                                         fs-7 fs-md-5 text-primary-600">
-                                        <p class="fw-bold mb-0">NT$ {{ room.price }}</p>
+                                        <p class="fw-bold mb-0">NT$ {{ $toThousands(room.price) }}</p>
                                         <NuxtLink
                                             :to="`/rooms/${room._id}`"
                                             class="icon-link icon-link-hover text-primary-600">

@@ -2,7 +2,7 @@
 
 import { Icon } from '@iconify/vue';
 
-const { $timeformat } = useNuxtApp();
+const { $dateformat, $toThousands } = useNuxtApp();
 const config = useRuntimeConfig();
 const route = useRoute();
 
@@ -48,7 +48,7 @@ const showModal = () => { modal.value.showModal(); }
 
 //
 
-const today = $timeformat(new Date().getTime());
+const today = $dateformat(new Date().getTime());
 
 const days = ref(0);
 
@@ -296,7 +296,7 @@ const confirmDate = (date) => {
                         </div>
                     </div>
                     <h5 class="text-primary-600 fw-bold mb-0">
-                    NT$ {{ room.price }}
+                    NT$ {{ $toThousands(room.price) }}
                     </h5>
                     <NuxtLink
                         :to="{ name: 'rooms-id-booking', params: { roomId: id.value } }"
@@ -313,7 +313,7 @@ const confirmDate = (date) => {
         d-flex justify-content-between align-items-center
         position-fixed bottom-0">
         <template v-if="!bookingDate.range.end">
-            <small class="text-neutral-500 fw-medium">NT$ {{ room.price }} / 晚</small>
+            <small class="text-neutral-500 fw-medium">NT$ {{ $toThousands(room.price) }} / 晚</small>
             <button
                 class="btn btn-primary-600 px-12 py-4 rounded-3
                 text-neutral-100 fw-bold"
@@ -325,14 +325,14 @@ const confirmDate = (date) => {
             <div class="d-flex flex-column gap-1">
                 <small
                     class="text-neutral-500 fw-medium">
-                    NT$ {{ room.price }} × {{ days }} 晚 / {{ bookingClientNumber }} 人
+                    NT$ {{ $toThousands(room.price) }} × {{ days }} 晚 / {{ bookingClientNumber }} 人
                 </small>
                 <span class="text-neutral fs-9 fw-medium text-decoration-underline">
                 {{ bookingDate.range.start }} ～ {{ bookingDate.range.end }}
                 </span>
             </div>
             <NuxtLink
-                :to="{ name: 'rooms-id-booking', params: { roomId: id.value } }"
+                :to="{ name: 'rooms-id-booking', params: { roomId: id } }"
                 class="btn btn-primary-600 px-12 py-4 rounded-3
                 text-neutral-100 fw-bold">
                 立即預訂
