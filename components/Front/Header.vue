@@ -76,10 +76,12 @@ const bgColor = computed(() => {
                         </NuxtLink>
                     </li>
                     <li class="nav-item d-none d-md-block">
-                        <div
-                            class="dropdown"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <button type="button" class="nav-link p-4 d-flex gap-2 text-neutral-100">
+                        <div class="btn-group">
+                            <button
+                                class="nav-link p-4 d-flex gap-2 text-neutral-100"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                type="button">
                                 <Icon
                                     class="fs-5"
                                     icon="mdi:account-circle-outline" />
