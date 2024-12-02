@@ -7,7 +7,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiUrl: ''
+      apiUrl: 'https://nuxr3.zeabur.app'
     }
   },
 

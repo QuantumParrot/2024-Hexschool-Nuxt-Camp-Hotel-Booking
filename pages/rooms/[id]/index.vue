@@ -299,7 +299,7 @@ const confirmDate = (date) => {
                     NT$ {{ $toThousands(room.price) }}
                     </h5>
                     <NuxtLink
-                        :to="{ name: 'rooms-id-booking', params: { roomId: id.value } }"
+                        :to="{ name: 'rooms-id-booking', params: { id } }"
                         class="btn btn-primary-600 py-4 rounded-3
                         text-neutral-100 fw-bold">
                         立即預訂
@@ -332,7 +332,7 @@ const confirmDate = (date) => {
                 </span>
             </div>
             <NuxtLink
-                :to="{ name: 'rooms-id-booking', params: { roomId: id } }"
+                :to="{ name: 'rooms-id-booking', params: { id } }"
                 class="btn btn-primary-600 px-12 py-4 rounded-3
                 text-neutral-100 fw-bold">
                 立即預訂
