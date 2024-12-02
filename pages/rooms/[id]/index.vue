@@ -290,7 +290,7 @@ const confirmDate = (date) => {
                             class="text-neutral-600
                             d-flex justify-content-between align-items-center">
                             <p class="mb-0">人數</p>
-                            <NumberCalcultor
+                            <NumberCalculator
                                 :num="bookingClientNumber" :max="maxBookingNumber"
                                 @update-number="updateClientNumber" />
                         </div>

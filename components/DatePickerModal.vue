@@ -232,7 +232,7 @@ defineExpose({ showModal });
                     <p class="text-neutral-500 fs-8 fw-medium mb-4">
                     此房型最多供四人居住，不接受寵物入住。
                     </p>
-                    <NumberCalcultor
+                    <NumberCalculator
                         :num="bookingClientNumber" :max="props.maxClientNumber"
                         @update-number="updateClientNumber" />
                 </div>
