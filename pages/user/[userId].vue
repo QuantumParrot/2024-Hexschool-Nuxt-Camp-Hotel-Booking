@@ -7,7 +7,16 @@ const id = ref(route.params.userId);
 
 onMounted(() => {
 
-    if (route.name === 'user-userId') { navigateTo({ name: 'user-userId-profile' }); }
+    if (route.name === 'user-userId') {
+        
+        navigateTo({
+
+            name: 'user-userId-profile',
+            params: { userId: username.value }
+            
+        });
+    
+    }
 
 });
 
@@ -41,7 +50,7 @@ onMounted(() => {
             <ul class="nav mb-10 mb-md-20 fw-bold">
                 <li class="nav-item">
                     <NuxtLink
-                        :to="{ name: 'user-userId-profile' }"
+                        :to="`/user/${username}/profile`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         個人資料
@@ -49,7 +58,7 @@ onMounted(() => {
                 </li>
                 <li class="nav-item">
                     <NuxtLink
-                        :to="{ name: 'user-userId-order' }"
+                        :to="`/user/${username}/order`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         我的訂單
