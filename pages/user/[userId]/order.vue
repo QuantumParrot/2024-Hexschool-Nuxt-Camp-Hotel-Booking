@@ -2,9 +2,15 @@
 
 import { Icon } from '@iconify/vue';
 
+//
+
 const facilites = ref(['電視', '吹風機', '冰箱', '熱水壺', '檯燈', '衣櫃', '除濕機', '浴缸', '書桌', '音響']);
 
 const items = ref(['衛生紙', '拖鞋', '沐浴用品', '清潔用品', '刮鬍刀', '吊衣架', '浴巾', '刷牙用品', '罐裝水', '梳子']);
+
+//
+
+useSeoMeta({ title: '訂單列表' });
 
 </script>
 

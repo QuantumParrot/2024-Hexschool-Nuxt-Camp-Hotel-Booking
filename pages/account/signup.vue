@@ -2,9 +2,15 @@
 
 import { Icon } from '@iconify/vue';
 
+//
+
 const isEmailAndPasswordValid = ref(false);
 
 const { month, days } = useDate();
+
+//
+
+useSeoMeta({ title: '註冊會員' });
 
 </script>
 

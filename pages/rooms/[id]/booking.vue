@@ -2,6 +2,8 @@
 
 import { Icon } from '@iconify/vue';
 
+//
+
 const confirmBooking = () => {
 
     navigateTo({
@@ -12,6 +14,10 @@ const confirmBooking = () => {
     })
 
 };
+
+//
+
+useSeoMeta({ title: '預約房型' })
 
 </script>
 

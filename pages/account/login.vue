@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+
+useSeoMeta({ title: '會員登入' });
+
+</script>
 
 <template>
 

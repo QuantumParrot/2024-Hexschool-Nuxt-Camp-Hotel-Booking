@@ -20,6 +20,8 @@ const { data } = await useAsyncData(() => {
 
 });
 
+useSeoMeta({ title: '客房旅宿' })
+
 </script>
 
 <template>

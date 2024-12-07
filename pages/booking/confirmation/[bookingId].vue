@@ -6,6 +6,8 @@ const route = useRoute();
 
 const bookingId = ref(route.params.bookingId);
 
+useSeoMeta({ title: '預約成功' });
+
 </script>
 
 <template>

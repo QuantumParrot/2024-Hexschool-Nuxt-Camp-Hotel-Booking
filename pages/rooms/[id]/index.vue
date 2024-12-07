@@ -33,6 +33,12 @@ const { data:room } = await useAsyncData(() => {
 
 });
 
+// 
+
+const title = ref(room.value.name);
+
+useSeoMeta({ title })
+
 //
 
 const maxBookingNumber = ref(room.value.maxPeople);

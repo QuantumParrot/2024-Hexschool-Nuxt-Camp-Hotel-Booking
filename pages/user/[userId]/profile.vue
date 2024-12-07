@@ -7,6 +7,10 @@ const { month, days } = useDate();
 const isEditPassword = ref(false);
 const isEditUserProfile = ref(false);
 
+//
+
+useSeoMeta({ title: '個人資料' });
+
 </script>
 
 <template>
