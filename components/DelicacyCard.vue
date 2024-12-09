@@ -2,10 +2,7 @@
 
 defineProps({
 
-    title: String,
-    description: String,
-    bussinessWeek: String,
-    bussinessHour: String,
+    title: String, description: String, diningTime: String,
 
 });
 
@@ -26,8 +23,7 @@ defineProps({
                 <div
                     class="d-flex justify-content-between gap-4
                     text-neutral-300 fs-8 fs-md-7">
-                    <span class="fw-bold">{{ bussinessWeek }}</span>
-                    <span class="fw-bold">{{ bussinessHour }}</span>
+                    <span class="fw-bold">{{ diningTime }}</span>
                 </div>
             </div>
             <p class="card-text fs-8 fs-md-7">

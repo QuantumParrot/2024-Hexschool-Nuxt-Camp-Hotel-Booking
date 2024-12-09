@@ -2,48 +2,57 @@
 
 import { Icon } from '@iconify/vue';
 
-const restaurants = ref([
-    {
-      title: '海霸',
-      description: '以新鮮海產料理聞名，我們的專業廚師選用高雄當地的海鮮，每一道菜都充滿海洋的鮮美與清甜。無論是烤魚、蒸蝦還是煮蛤蜊，都能讓您品嚐到最新鮮的海洋風味。',
-      bussiness_week: 'SUN-MON',
-      bussiness_hour: '11:00 - 20:30',
-      image: 'home-food-1.png',
-      image_sm: 'home-food-sm-1.png',
-    },
-    {
-      title: '日食',
-      description: '為您提供優質的牛排，每一塊肉都來自頂級的牛肉，經過專業廚師的巧手烹調，口感豐滿、風味絕佳。搭配我們的特製醬料，讓您的味蕾享受一場美味的盛宴。',
-      bussiness_week: 'SUN-MON',
-      bussiness_hour: '17:00 - 22:00',
-      image: 'home-food-2.png',
-      image_sm: 'home-food-sm-2.png',
-    },
-    {
-      title: '山臻',
-      description: '帶您進入一次辣味與鮮香兼具的川菜美食之旅。我們的廚師掌握正宗的川菜烹調技巧，從麻辣鍋到口水雞，每一道菜都有其獨特的風味，讓您回味無窮。',
-      bussiness_week: 'SUN-MON',
-      bussiness_hour: '11:30 - 20:30',
-      image: 'home-food-3.png',
-      image_sm: 'home-food-sm-3.png',
-    },
-    {
-      title: '月永',
-      description: '從鮮美的海鮮、經典的牛排，到各國的特色美食，我們都一應俱全。在這裡，您可以品嚐到世界各地的美食，每一道菜都由專業廚師用心製作，讓您在享受美食的同時，也能感受到我們的熱情與用心。',
-      bussiness_week: 'SUN-MON',
-      bussiness_hour: '11:00 - 20:00',
-      image: 'home-food-4.png',
-      image_sm: 'home-food-sm-4.png',
-    },
-    {
-      title: '天潮',
-      description: '我們提供各種精緻甜點與糕點，無論您喜歡的是巧克力蛋糕、法式馬卡龍，還是台灣傳統的糕點，都能在這裡找到。讓我們的甜點帶您進入一場繽紛的甜蜜旅程。',
-      bussiness_week: 'SUN-MON',
-      bussiness_hour: '14:00 - 19:30',
-      image: 'home-food-5.png',
-      image_sm: 'home-food-sm-5.png',
-    }
-]);
+//
+
+const config = useRuntimeConfig();
+
+const { data } = await useAsyncData("hotelInfo", async () => {
+
+  return await Promise.allSettled([
+
+    $fetch(`${config.public.apiUrl}/api/v1/home/news`),
+    $fetch(`${config.public.apiUrl}/api/v1/home/culinary`),
+    $fetch(`${config.public.apiUrl}/api/v1/rooms`)
+
+  ])
+
+}, {
+
+  transform: (resArr) => {
+
+    return resArr.map((res) => {
+
+      if (res.status !== 'fulfilled') return;
+      return res.value.result;
+
+    })
+
+  }
+
+});
+
+const news = ref(data.value[0]);
+
+const culinary = ref(data.value[1]);
+
+const rooms = ref(data.value[2]);
+
+// 在首頁隨機顯示其中一種房型
+
+const pickup = ref({});
+
+const getRandomRoom = () => {
+
+    return Math.floor(Math.random() * rooms.value.length);
+
+}
+
+onMounted(() => {
+
+  const randomIndex = getRandomRoom();
+  pickup.value = rooms.value[randomIndex];
+
+});
 
 </script>
 
@@ -113,65 +122,25 @@ const restaurants = ref([
                     </div>
                 </div>
                 <div class="col-md-10 d-flex flex-column gap-10">
-                    <div class="card bg-transparent border-0">
+                    <div
+                        class="card bg-transparent border-0"
+                        v-for="item in news" :key="item._id">
                         <div class="d-flex flex-column flex-md-row align-items-center gap-6">
                             <picture>
                                 <source
-                                    srcset="/images/home-news-1.png"
+                                    :srcset="item.image"
                                     media="(min-width: 576px)">
                                 <img
-                                    src="/images/home-news-sm-1.png"
-                                    alt="秋季旅遊，豪華享受方案"
+                                    :src="item.image"
+                                    :alt="item.title"
                                     class="w-100 rounded-3">
                             </picture>
                             <div class="card-body p-0">
                                 <h3 class="card-title fw-bold mb-2 mb-md-6">
-                                秋季旅遊，豪華享受方案
+                                {{ item.title }}
                                 </h3>
                                 <p class="card-text text-neutral-500 fs-8 fs-md-7 fw-medium">
-                                秋天就是要來場豪華的旅遊！我們為您準備了一系列的秋季特別方案，包括舒適的住宿、美食饗宴，以及精彩的活動。不論您是想來一趟浪漫之旅，還是想和家人共度美好時光，都能在這裡找到最適合的方案。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card bg-transparent border-0">
-                        <div class="d-flex flex-column flex-md-row align-items-center gap-6">
-                            <picture>
-                                <source
-                                    srcset="/images/home-news-2.png"
-                                    media="(min-width: 576px)">
-                                <img
-                                    src="/images/home-news-sm-2.png"
-                                    alt="輕鬆住房專案"
-                                    class="w-100 rounded-3">
-                            </picture>
-                            <div class="card-body p-0">
-                                <h3 class="card-title fw-bold mb-2 mb-md-6">
-                                輕鬆住房專案
-                                </h3>
-                                <p class="card-text text-neutral-500 fs-8 fs-md-7 fw-medium">
-                                我們知道，有時候您只是需要一個舒適的地方放鬆心情。因此，我們推出了「輕鬆住房專案」，讓您無壓力地享受住宿。不管是短期的休息，還是長期的住宿，我們都會以最貼心的服務，讓您感到賓至如歸。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card bg-transparent border-0">
-                        <div class="d-flex flex-column flex-md-row align-items-center gap-6">
-                            <picture>
-                                <source
-                                    srcset="/images/home-news-3.png"
-                                    media="(min-width: 576px)">
-                                <img
-                                    src="/images/home-news-sm-3.png"
-                                    alt="耶誕快樂，住房送禮"
-                                    class="w-100 rounded-3">
-                            </picture>
-                            <div class="card-body p-0">
-                                <h3 class="card-title fw-bold mb-2 mb-md-6">
-                                耶誕快樂，住房送禮
-                                </h3>
-                                <p class="card-text text-neutral-500 fs-8 fs-md-7 fw-medium">
-                                聖誕節來臨，我們為您準備了特別的禮物！在聖誕期間訂房，不僅有特別優惠，還會送上我們精心準備的聖誕禮物。讓我們一起慶祝這個溫馨的節日吧！
+                                {{ item.description }}
                                 </p>
                             </div>
                         </div>
@@ -257,15 +226,15 @@ const restaurants = ref([
             </SwiperCarousel>
             <div class="room-intro-content text-neutral-100">
                 <h2 class="fw-bold mb-2 mb-md-4">
-                尊爵雙人房
+                {{ pickup.name }}
                 </h2>
                 <p class="fs-8 fs-md-7 mb-6 mb-md-10">
-                享受高級的住宿體驗，尊爵雙人房提供給您舒適寬敞的空間和精緻的裝潢。</p>
+                {{ pickup.description }}</p>
                 <p class="fs-3 fw-bold mb-6 mb-md-10">
-                NT$ 10,000
+                NT$ {{ pickup.price }}
                 </p>
                 <NuxtLink
-                    to="/rooms"
+                    :to="`/rooms/${pickup._id}`"
                     class="cta-btn btn btn-neutral-100 border-0
                     w-100 d-flex justify-content-end align-items-center gap-3
                     p-5 p-md-10 mb-6 mb-md-10
@@ -287,20 +256,18 @@ const restaurants = ref([
                 <div class="deco-line" />
             </div>
             <div class="row flex-nowrap overflow-x-auto">
-                <template v-for="(item, idx) in restaurants" :key="item.title + idx">
+                <template v-for="item in culinary" :key="item._id">
                     <DelicacyCard
-                        :title="item.title"
-                        :description="item.description"
-                        :bussiness-hour="item.bussiness_hour"
-                        :bussiness-week="item.bussiness_week">
+                        :title="item.title" :description="item.description"
+                        :dining-time="item.diningTime">
                         <template #image>
                             <picture>
                                 <source
-                                    :srcset="`/images/${item.image}`"
+                                    :srcset="item.image"
                                     media="(min-width: 576px)">
                                 <img
                                     class="w-100 rounded-3"
-                                    :src="`/images/${item.image_sm}`"
+                                    :src="item.image"
                                     :alt="item.title">
                             </picture>
                         </template>
