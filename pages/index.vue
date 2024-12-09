@@ -43,7 +43,11 @@ const pickup = ref({});
 
 const getRandomRoom = () => {
 
+  if (Array.isArray(rooms.value)) {
+
     return Math.floor(Math.random() * rooms.value.length);
+
+  }
 
 }
 
