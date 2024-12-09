@@ -92,7 +92,7 @@ useSeoMeta({ title: '客房旅宿' })
                             </div>
                             <div class="col-lg-5">
                                 <div class="card-body pe-md-10 py-md-10">
-                                    <h3 class="card-title fs-2 fw-bold text-neutral-600">
+                                    <h3 class="card-title fs-3 fw-bold text-neutral-600 mb-5">
                                     {{ room.name }}
                                     </h3>
                                     <p class="card-text fs-8 fs-md-7 fw-medium text-neutral-500
@@ -104,7 +104,7 @@ useSeoMeta({ title: '客房旅宿' })
                                                 icon="fluent:slide-size-24-filled"
                                                 />
                                             <p class="text-neutral-500 fw-bold text-nowrap mb-0">
-                                            {{ room.areaInfo }}
+                                            {{ room.areaInfo }} 坪
                                             </p>
                                         </li>
                                         <li class="card-info px-4 py-5 border border-primary-300 rounded-3">
@@ -122,7 +122,7 @@ useSeoMeta({ title: '客房旅宿' })
                                                 icon="ic:baseline-person"
                                                 />
                                             <p class="text-neutral-500 fw-bold text-nowrap mb-0">
-                                            2 - {{ room.maxPeople }} 人
+                                            1 - {{ room.maxPeople }} 人
                                             </p>
                                         </li>
                                     </ul>

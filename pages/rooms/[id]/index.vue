@@ -141,7 +141,7 @@ const confirmDate = (date) => {
                                 icon="fluent:slide-size-24-filled"
                                 />
                             <p class="text-neutral-500 fw-bold text-nowrap mb-0">
-                            {{ room.areaInfo }}
+                            {{ room.areaInfo }} 坪
                             </p>
                         </li>
                         <li class="card-info bg-neutral-100 px-4 py-5 border border-primary-300 rounded-3">
@@ -159,7 +159,7 @@ const confirmDate = (date) => {
                                 icon="ic:baseline-person"
                                 />
                             <p class="text-neutral-500 fw-bold text-nowrap mb-0">
-                            2 - {{ room.maxPeople }} 人
+                            1 - {{ room.maxPeople }} 人
                             </p>
                         </li>
                     </ul>
@@ -250,7 +250,7 @@ const confirmDate = (date) => {
                     預訂房型
                     </h5>
                     <div class="text-neutral-500">
-                        <h2 class="fw-bold">
+                        <h2 class="fs-3 fw-bold mb-5">
                         {{ room.name }}
                         </h2>
                         <p class="fw-medium mb-0">{{ room.description }}</p>
