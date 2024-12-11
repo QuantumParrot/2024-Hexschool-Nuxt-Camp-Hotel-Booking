@@ -263,19 +263,8 @@ onMounted(() => {
                 <template v-for="item in culinary" :key="item._id">
                     <DelicacyCard
                         :title="item.title" :description="item.description"
-                        :dining-time="item.diningTime">
-                        <template #image>
-                            <picture>
-                                <source
-                                    :srcset="item.image"
-                                    media="(min-width: 576px)">
-                                <img
-                                    class="w-100 rounded-3"
-                                    :src="item.image"
-                                    :alt="item.title">
-                            </picture>
-                        </template>
-                    </DelicacyCard>
+                        :dining-time="item.diningTime"
+                        :image="item.image" />
                 </template>
             </div>
         </div>
