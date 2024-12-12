@@ -4,30 +4,34 @@ import { Icon } from '@iconify/vue';
 
 //
 
+const isHeroLoading = ref(true);
+
+//
+
 const config = useRuntimeConfig();
 
 const { data } = await useAsyncData("hotelInfo", async () => {
 
-  return await Promise.allSettled([
+    return await Promise.allSettled([
 
-    $fetch(`${config.public.apiUrl}/api/v1/home/news`),
-    $fetch(`${config.public.apiUrl}/api/v1/home/culinary`),
-    $fetch(`${config.public.apiUrl}/api/v1/rooms`)
+        $fetch(`${config.public.apiUrl}/api/v1/home/news`),
+        $fetch(`${config.public.apiUrl}/api/v1/home/culinary`),
+        $fetch(`${config.public.apiUrl}/api/v1/rooms`)
 
-  ])
+    ])
 
 }, {
 
-  transform: (resArr) => {
+    transform: (resArr) => {
 
-    return resArr.map((res) => {
+        return resArr.map((res) => {
 
-      if (res.status !== 'fulfilled') return;
-      return res.value.result;
+            if (res.status !== 'fulfilled') return;
+            return res.value.result;
 
-    })
+        })
 
-  }
+    }
 
 });
 
@@ -43,18 +47,18 @@ const pickup = ref({});
 
 const getRandomRoom = () => {
 
-  if (Array.isArray(rooms.value)) {
+    if (Array.isArray(rooms.value)) {
 
-    return Math.floor(Math.random() * rooms.value.length);
+        return Math.floor(Math.random() * rooms.value.length);
 
-  }
+    }
 
 }
 
 onMounted(() => {
 
-  const randomIndex = getRandomRoom();
-  pickup.value = rooms.value[randomIndex];
+    const randomIndex = getRandomRoom();
+    pickup.value = rooms.value[randomIndex];
 
 });
 
@@ -75,7 +79,8 @@ onMounted(() => {
                     <img
                         class="hero-img"
                         src="/images/home-hero-sm.png"
-                        alt="hero banner">
+                        alt="hero banner"
+                        @load="isHeroLoading = false">
                 </picture>
                 </swiper-slide>
             </template>
@@ -84,31 +89,53 @@ onMounted(() => {
             class="hero-wrapper w-100 px-md-20
             position-absolute z-2
             d-flex flex-column flex-md-row 
-            justify-content-center justify-content-md-between
-            align-items-center gap-md-10">
-            <div
-                class="d-md-block d-flex flex-column align-items-center
-                text-center text-md-start">
-                <div class="mt-10 mt-md-0 mb-5 mb-md-10 text-primary-600 fw-bold">
-                    <h2>享樂酒店</h2>
-                    <h5 class="fs-7 fs-md-5 mb-0">Enjoyment Luxury Hotel</h5>
+            justify-content-center justify-content-md-between align-items-center
+            gap-md-10">
+            <template v-if="!isHeroLoading">
+                <div
+                    class="d-md-block d-flex flex-column align-items-center
+                    text-center text-md-start">
+                    <div class="mt-10 mt-md-0 mb-5 mb-md-10 text-primary-600 fw-bold">
+                        <h2>享樂酒店</h2>
+                        <h5 class="fs-7 fs-md-5 mb-0">Enjoyment Luxury Hotel</h5>
+                    </div>
+                    <div class="deco-line" />
                 </div>
-                <div class="deco-line" />
-            </div>
-            <div class="hero-intro">
-                <div class="hero-intro-content">
-                    <h1 class="text-white fw-bold text-nowrap mb-6">
-                    高雄<br>豪華住宿之選
-                    </h1>
-                    <p class="text-neutral-100 fw-semibold">我們致力於為您提供無與倫比的奢華體驗與優質服務</p>
-                    <NuxtLink
-                        to="/rooms"
-                        class="cta-btn btn w-100 btn-neutral-100 border-0
-                        d-flex justify-content-end align-items-center gap-3
-                        text-end fs-5 fw-semibold">
-                        立即訂房
-                        <div class="cta-deco" />
-                    </NuxtLink>
+                <div class="hero-intro">
+                    <div class="hero-intro-content">
+                        <h1 class="text-white fw-bold text-nowrap mb-6">
+                        高雄<br>豪華住宿之選
+                        </h1>
+                        <p class="text-neutral-100 fw-semibold">我們致力於為您提供無與倫比的奢華體驗與優質服務</p>
+                        <NuxtLink
+                            to="/rooms"
+                            class="cta-btn btn w-100 btn-neutral-100 border-0
+                            d-flex justify-content-end align-items-center gap-3
+                            text-end fs-5 fw-semibold">
+                            立即訂房
+                            <div class="cta-deco" />
+                        </NuxtLink>
+                    </div>
+                </div>
+            </template>
+            <div class="w-100 h-100 d-flex justify-content-center align-items-center gap-4" v-else>
+                <div
+                    class="spinner-grow bg-primary-600"
+                    style="--bs-spinner-animation-speed: 1s"
+                    role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div
+                    class="spinner-grow bg-primary-500"
+                    style="--bs-spinner-animation-speed: 1.5s"
+                    role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div
+                    class="spinner-grow bg-primary-400"
+                    style="--bs-spinner-animation-speed: 2s"
+                    role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
         </div>
@@ -336,6 +363,14 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+
+.hero {
+
+  height: 100vh;
+  background-color: #7B6651;
+  overflow: hidden;
+
+}
 
 .hero-img {
 
