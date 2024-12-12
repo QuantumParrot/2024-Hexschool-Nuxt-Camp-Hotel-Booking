@@ -1,19 +1,23 @@
 export const useDate = () => {
 
-  const oddMonths = [1, 3, 5, 7, 8, 10, 12]; 
+    const minYear = new Date().getFullYear() - 100;
 
-  const month = ref(1);
+    const oddMonths = [1, 3, 5, 7, 8, 10, 12];
 
-  const days = computed(() => {
+    const date = reactive({ year: '', month: 1, day: 1 });
 
-    if (month.value == 2) return 29;
+    const days = computed(() => {
 
-    if (oddMonths.includes(month.value)) return 31;
+        if (date.month == 2) return 29;
 
-    return 30;
+        if (oddMonths.includes(date.month)) return 31;
 
-  });
+        return 30;
 
-  return { month, days }
+    });
+
+    watch(() => date.month, () => date.day = 1);
+
+    return { minYear, date, days }
 
 }
