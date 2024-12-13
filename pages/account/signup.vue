@@ -27,17 +27,26 @@ defineRule('required', required);
 defineRule('email', email);
 defineRule('min', min);
 
-configure({ validateOnInput: true, generateMessage: localize({ zhTW }) });
+configure({
+    
+    validateOnInput: true,
+    generateMessage: localize({ zhTW })
+
+});
 
 setLocale('zhTW');
 
+// composables
+
 const { translateMessage, phoneFormat } = useValidation();
+
+// pinia store
+
+const { sendSignUpAuth } = useAuthStore();
 
 //
 
 const signUpStep = ref(1);
-
-//
 
 const signUpFormData = ref({
 
@@ -113,11 +122,11 @@ const isFormFinished = computed(() => {
 
 //
 
-const { sendSignUpAuth } = useAuthStore();
-
 const isPending = ref(false);
 
-const handleSignUpProcess = () => {
+const handleSignUpProcess = (signupData, { resetForm }) => {
+
+    // if (!isFormFinished.value) return;
 
     const data = { ...signUpFormData.value, birthday: birthday.value };
     
@@ -135,6 +144,8 @@ const handleSignUpProcess = () => {
         .then((res) => {
 
             // console.log(res);
+
+            resetForm();
             
             setTimeout(() => navigateTo({ name: 'account-login' }), 1500);
 
