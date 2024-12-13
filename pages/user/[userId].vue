@@ -12,7 +12,7 @@ onMounted(() => {
         navigateTo({
 
             name: 'user-userId-profile',
-            params: { userId: username.value }
+            params: { userId: route.params.userId }
             
         });
     
@@ -50,7 +50,7 @@ onMounted(() => {
             <ul class="nav mb-10 mb-md-20 fw-bold">
                 <li class="nav-item">
                     <NuxtLink
-                        :to="`/user/${username}/profile`"
+                        :to="`/user/${id}/profile`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         個人資料
@@ -58,7 +58,7 @@ onMounted(() => {
                 </li>
                 <li class="nav-item">
                     <NuxtLink
-                        :to="`/user/${username}/order`"
+                        :to="`/user/${id}/order`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         我的訂單

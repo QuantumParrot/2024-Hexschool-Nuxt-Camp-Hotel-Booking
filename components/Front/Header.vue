@@ -4,9 +4,15 @@ import { Icon } from '@iconify/vue';
 
 //
 
+import useAuthStore from '@/stores/auth';
+
+//
+
 const { $bootstrap } = useNuxtApp();
 
 const route = useRoute();
+
+const { logout } = useAuthStore();
 
 //
 
@@ -99,7 +105,9 @@ const bgColor = computed(() => {
                                     </NuxtLink>
                                 </li>
                                 <li>
-                                    <a role="button" class="dropdown-item px-6 py-4">登出</a>
+                                    <a role="button" class="dropdown-item px-6 py-4" @click="logout">
+                                    登出
+                                    </a>
                                 </li>
                             </ul>
                         </div>
