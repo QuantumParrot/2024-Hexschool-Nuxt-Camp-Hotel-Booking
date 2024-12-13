@@ -7,7 +7,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiUrl: 'https://nuxr3.zeabur.app'
+      apiUrl: '',
+      apiUrlTest: '',
     }
   },
 
@@ -44,7 +45,8 @@ export default defineNuxtConfig({
       link: [
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap' }
       ]
-    }
+    },
+    pageTransition: { name: 'page' }
   },
 
   modules: [
