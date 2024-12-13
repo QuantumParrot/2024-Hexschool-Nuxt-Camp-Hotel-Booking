@@ -2,6 +2,8 @@
 
 import { Icon } from '@iconify/vue';
 
+//
+
 const { $bootstrap } = useNuxtApp();
 
 const route = useRoute();
@@ -12,7 +14,8 @@ const menu = ref(null);
 let menuCollapse;
 
 onMounted(() => { menuCollapse = $bootstrap.collapse(menu.value); });
-onBeforeUnmount(() => { menuCollapse.dispose(); })
+
+watch(() => route.name, () => { menuCollapse.hide(); })
 
 //
 
