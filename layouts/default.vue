@@ -6,23 +6,28 @@ import useUserStore from '@/stores/user';
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
-const { isLoggedIn } = storeToRefs(authStore);
-const { userId, username } = storeToRefs(userStore);
+if (import.meta.server) {
+    
+    const res = await authStore.checkAuth();
 
-if (import.meta.server) { authStore.checkAuth(); }
+    // 回傳的是登入狀態 ( true / false )
 
-onMounted(() => {
+    // 若是已經登入，則在 server 端 "只" 取得用戶的 id ( 用來渲染 NuxtLink ) 和用戶名稱
 
-    if (isLoggedIn.value) { userStore.getUserData(); }
+    if (res) {
 
-})
+        await userStore.getUserData();
+
+    }
+
+}
 
 </script>
 
 <template>
 
 <div>
-    <FrontHeader :user-id="userId" :username="username" />
+    <FrontHeader />
     <slot />
     <FrontFooter />
 </div>

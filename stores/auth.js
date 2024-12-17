@@ -12,7 +12,7 @@ export default defineStore("auth", () => {
 
     const checkAuth = async () => {
 
-        // console.log('執行 check auth');
+        // console.trace('執行 check auth');
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 

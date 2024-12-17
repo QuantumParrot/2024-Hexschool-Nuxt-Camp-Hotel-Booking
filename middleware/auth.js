@@ -9,26 +9,40 @@ import useUserStore from '@/stores/user';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
-    const authStore = useAuthStore();
-    const userStore = useUserStore();
+    // console.trace('middleware: check auth');
 
     const { isHydrating, payload } = useNuxtApp();
+
+    const authStore = useAuthStore();
+    const userStore = useUserStore();
 
     const { userId } = storeToRefs(userStore);
 
     if (import.meta.client && isHydrating && payload.serverRendered) return;
 
+    /* 以下程式碼只於伺服器端執行 */
+
     const status = await authStore.checkAuth();
 
-    const currentPath = to.path.split('/')[1];
+    const currentDir = to.path.split('/')[1];
 
     if (status) {
 
         /* 身份驗證成功 */
 
-        await userStore.getUserData();
+        if (currentDir !== 'user') {
+            
+            await userStore.getUserData();
 
-        if (currentPath === 'account') {
+            // 因為 /user/* 頁面同時包含了 default 的 layout
+
+            // 該元件本身就會執行一次 checkAuth --> getUserData 的流程
+            
+            // 所以不需要再執行ㄧ次
+        
+        } 
+
+        if (currentDir === 'account') {
 
             return navigateTo({
                 
@@ -48,7 +62,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
         /* 身份驗證失敗 */
 
-        if (currentPath === 'user' || currentPath === 'admin') {
+        if (currentDir === 'user' || currentDir === 'admin') {
 
             return navigateTo({
                 

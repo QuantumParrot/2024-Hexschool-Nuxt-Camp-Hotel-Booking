@@ -5,15 +5,9 @@ import { Icon } from '@iconify/vue';
 //
 
 import useAuthStore from '@/stores/auth';
+import useUserStore from '@/stores/user';
 
 //
-
-defineProps({
-
-    username: { type: String, required: true },
-    userId: { type: String, required: true },
-
-})
 
 const { $bootstrap } = useNuxtApp();
 
@@ -22,9 +16,12 @@ const route = useRoute();
 //
 
 const authStore = useAuthStore();
+const userStore = useUserStore();
 
 const { isLoggedIn } = storeToRefs(authStore);
 const { logout } = authStore;
+
+const { userId, username } = storeToRefs(userStore);
 
 // 操作 collapse
 
@@ -100,7 +97,7 @@ const bgColor = computed(() => {
                         客房旅宿
                         </NuxtLink>
                     </li>
-                    <li class="nav-item d-none d-md-block" v-if="isLoggedIn && userId">
+                    <li class="nav-item d-none d-md-block" v-if="isLoggedIn">
                         <div class="btn-group">
                             <button
                                 class="nav-link p-4 d-flex gap-2 text-neutral-100"
@@ -144,7 +141,7 @@ const bgColor = computed(() => {
                             </NuxtLink>
                         </li>
                     </template>
-                    <li class="nav-item d-md-none" v-if="isLoggedIn && userId">
+                    <li class="nav-item d-md-none" v-if="isLoggedIn">
                         <NuxtLink
                             :to="{ name: 'user-userId-profile', params: { userId } }"
                             class="nav-link p-4 text-neutral-100">
