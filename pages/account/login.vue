@@ -69,7 +69,7 @@ const handleLoginProcess = (loginData, { resetForm }) => {
 
             // console.log(id);
 
-            setTimeout(() => { router.push(`/user/${id}`); }, 1500);
+            setTimeout(() => { router.replace(`/user/${id}`); }, 1500);
 
         })
         .catch((error) => {
@@ -171,11 +171,10 @@ const handleLoginProcess = (loginData, { resetForm }) => {
             <span>前往註冊</span>
         </NuxtLink>
     </p>
+    <LoadingModal v-if="isPending">
+        <p class="text-neutral-500 fs-5 fw-bold mb-0">登入中，請稍候</p>
+    </LoadingModal>
 </div>
-
-<LoadingModal v-if="isPending">
-    <p class="text-neutral-500 fs-5 fw-bold mb-0">登入中，請稍候</p>
-</LoadingModal>
 
 </template>
 

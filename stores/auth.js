@@ -1,8 +1,40 @@
 export default defineStore("auth", () => {
 
+    // composables
+
     const config = useRuntimeConfig();
 
     const { showToastAlert } = useAlert();
+
+    //
+
+    const isLoggedIn = ref(false);
+
+    const checkAuth = async () => {
+
+        // console.log('執行 check auth');
+
+        const token = useCookie('nuxt-camp-hotel-booking-auth');
+
+        if (!token.value) return;
+
+        try {
+
+            const res = await $fetch('/api/v1/user/check', {
+
+                baseURL: config.public.apiUrl,
+                method: 'GET',
+                headers: { Authorization: token.value }
+
+            });
+
+            isLoggedIn.value = true;
+
+            return res.status;
+
+        } catch (error) { isLoggedIn.value = false; }
+
+    };
 
     const sendSignUpAuth = async (body) => {
 
@@ -30,13 +62,13 @@ export default defineStore("auth", () => {
 
                 showToastAlert({ icon: 'warning', text: message });
 
-                throw new Error(message);
+                // throw new Error(message);
 
             } else {
 
                 showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' })
 
-                console.error(error.data);
+                // console.error(error.data);
 
             }
             
@@ -62,6 +94,8 @@ export default defineStore("auth", () => {
 
             showToastAlert({ icon: 'success', text: '登入成功' });
 
+            isLoggedIn.value = true;
+
             return res.result.id;
 
         } catch (error) {
@@ -72,13 +106,13 @@ export default defineStore("auth", () => {
 
                 showToastAlert({ icon: 'warning', text: message });
 
-                throw new Error(message);
+                // throw new Error(message);
 
             } else {
 
                 showToastAlert({ icon: 'error', text: '出現錯誤，請稍候再試' });
 
-                console.error(error.data);
+                // console.error(error.data);
 
             }
 
@@ -88,14 +122,16 @@ export default defineStore("auth", () => {
 
     const logout = () => {
 
-        const token = useCookie('nuxt-hotel-booking-auth');
+        const token = useCookie('nuxt-camp-hotel-booking-auth');
         token.value = null;
 
+        isLoggedIn.value = false;
+
         showToastAlert({ icon: 'success', text: '登出成功，期待您的再訪！' });
-        setTimeout(() => navigateTo('/'), 1500);
+        navigateTo('/', { replace: true });
 
     };
 
-    return { sendSignUpAuth, sendLoginAuth, logout }
+    return { isLoggedIn, checkAuth, sendSignUpAuth, sendLoginAuth, logout }
 
 });

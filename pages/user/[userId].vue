@@ -1,22 +1,38 @@
 <script setup>
 
+definePageMeta({ middleware: 'auth' });
+
+//
+
+import useAuthStore from '@/stores/auth';
+import useUserStore from '@/stores/user';
+
+// composables
+
+const router = useRouter();
+
 const route = useRoute();
 
-const username = ref('Jessica');
-const id = ref(route.params.userId);
+// pinia
+
+const { userData } = storeToRefs(useUserStore());
+
+const { logout } = useAuthStore();
+
+//
 
 onMounted(() => {
 
     if (route.name === 'user-userId') {
         
-        navigateTo({
+        router.replace({
 
             name: 'user-userId-profile',
-            params: { userId: route.params.userId }
+            params: { userId: userData._id }
             
         });
     
-    }
+    };
 
 });
 
@@ -41,7 +57,15 @@ onMounted(() => {
                 d-flex flex-column flex-md-row justify-content-center justify-content-md-start
                 align-items-md-center gap-4 gap-md-6 mx-5 my-10 m-md-0">
                 <img class="avatar" src="/images/avatar-6.png" alt="avatar">
-                <h2 class="h1 text-neutral-100 fw-bold mb-0">Hello，{{ username }}</h2>
+                <div class="w-100 d-flex justify-content-between gap-4">
+                    <h2 class="h1 text-neutral-100 fw-bold mb-0">Hello，{{ userData.name || '訪客' }}</h2>
+                    <button
+                        class="d-md-none align-self-stretch btn btn-primary-600
+                        text-neutral-100"
+                        type="button" @click="logout">
+                        登出
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -50,7 +74,7 @@ onMounted(() => {
             <ul class="nav mb-10 mb-md-20 fw-bold">
                 <li class="nav-item">
                     <NuxtLink
-                        :to="`/user/${id}/profile`"
+                        :to="`/user/${userData._id}/profile`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         個人資料
@@ -58,7 +82,7 @@ onMounted(() => {
                 </li>
                 <li class="nav-item">
                     <NuxtLink
-                        :to="`/user/${id}/order`"
+                        :to="`/user/${userData._id}/order`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         我的訂單

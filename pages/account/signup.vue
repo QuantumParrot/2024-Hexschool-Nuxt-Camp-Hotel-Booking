@@ -417,11 +417,11 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
             <span>立即登入</span>
         </NuxtLink>
     </p>
-</div>
 
-<LoadingModal v-if="isPending">
-    <p class="text-neutral-500 fs-5 fw-bold mb-0">註冊中，請稍候</p>
-</LoadingModal>
+    <LoadingModal v-if="isPending">
+        <p class="text-neutral-500 fs-5 fw-bold mb-0">註冊中，請稍候</p>
+    </LoadingModal>
+</div>
 
 </template>
 

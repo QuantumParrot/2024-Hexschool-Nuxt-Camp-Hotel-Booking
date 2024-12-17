@@ -1,6 +1,6 @@
 <script setup>
 
-definePageMeta({ layout: 'account' });
+definePageMeta({ layout: 'account', middleware: ['auth', 'redirect'] });
 
 //
 

@@ -8,13 +8,25 @@ import useAuthStore from '@/stores/auth';
 
 //
 
+defineProps({
+
+    username: { type: String, required: true },
+    userId: { type: String, required: true },
+
+})
+
 const { $bootstrap } = useNuxtApp();
 
 const route = useRoute();
 
-const { logout } = useAuthStore();
-
 //
+
+const authStore = useAuthStore();
+
+const { isLoggedIn } = storeToRefs(authStore);
+const { logout } = authStore;
+
+// 操作 collapse
 
 const menu = ref(null);
 let menuCollapse;
@@ -23,7 +35,7 @@ onMounted(() => { menuCollapse = $bootstrap.collapse(menu.value); });
 
 watch(() => route.name, () => { menuCollapse.hide(); })
 
-//
+// 監聽 scroll 事件
 
 const isScrolled = ref(false);
 const handleScroll = () => { isScrolled.value = window.scrollY > 50; }
@@ -38,15 +50,15 @@ const isTransparentRoute = computed(() => transparentBgRoute.includes(route.name
 
 const bgColor = computed(() => {
 
-  if (isScrolled.value) {
+    if (isScrolled.value) {
 
-    return "scrolled"
+        return "scrolled"
 
-  } else {
+    } else {
 
-    return isTransparentRoute.value ? "bg-transparent" : "bg-neutral-700"
+        return isTransparentRoute.value ? "bg-transparent" : "bg-neutral-700"
 
-  }
+    }
 
 });
 
@@ -84,7 +96,7 @@ const bgColor = computed(() => {
                         客房旅宿
                         </NuxtLink>
                     </li>
-                    <li class="nav-item d-none d-md-block">
+                    <li class="nav-item d-none d-md-block" v-if="isLoggedIn && userId">
                         <div class="btn-group">
                             <button
                                 class="nav-link p-4 d-flex gap-2 text-neutral-100"
@@ -94,12 +106,12 @@ const bgColor = computed(() => {
                                 <Icon
                                     class="fs-5"
                                     icon="mdi:account-circle-outline" />
-                                Jessica
+                                {{ username }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <NuxtLink
-                                        :to="{ name: 'user-userId-profile', params: { userId: 'jessica' } }"
+                                        :to="{ name: 'user-userId-profile', params: { userId } }"
                                         class="dropdown-item px-6 py-4">
                                     我的帳戶
                                     </NuxtLink>
@@ -112,7 +124,30 @@ const bgColor = computed(() => {
                             </ul>
                         </div>
                     </li>
-                    <li class="nav-item d-md-none">
+                    <template v-else>
+                        <li class="nav-iten d-none d-md-block">
+                            <NuxtLink
+                                to="/account/signup"
+                                class="nav-link p-4 text-neutral-100">
+                            註冊
+                            </NuxtLink>
+                        </li>
+                        <li class="nav-iten d-none d-md-block">
+                          <NuxtLink
+                                to="/account/login"
+                                class="nav-link p-4 text-neutral-100">
+                            登入
+                            </NuxtLink>
+                        </li>
+                    </template>
+                    <li class="nav-item d-md-none" v-if="isLoggedIn && userId">
+                        <NuxtLink
+                            :to="{ name: 'user-userId-profile', params: { userId } }"
+                            class="nav-link p-4 text-neutral-100">
+                        會員中心
+                        </NuxtLink>
+                    </li>
+                    <li class="nav-item d-md-none" v-else>
                         <NuxtLink
                             to="/account/login"
                             class="nav-link p-4 text-neutral-100">
