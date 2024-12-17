@@ -33,7 +33,11 @@ let menuCollapse;
 
 onMounted(() => { menuCollapse = $bootstrap.collapse(menu.value); });
 
-watch(() => route.name, () => { menuCollapse.hide(); })
+watch(() => route.name, () => {
+
+    if (menuCollapse && import.meta.client) { menuCollapse.hide(); }
+
+})
 
 // 監聽 scroll 事件
 
