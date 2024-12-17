@@ -4,7 +4,7 @@ export const useDate = () => {
 
     const oddMonths = [1, 3, 5, 7, 8, 10, 12];
 
-    const date = reactive({ year: '', month: 1, day: 1 });
+    const date = ref({ year: '', month: 1, day: 1 });
 
     const days = computed(() => {
 

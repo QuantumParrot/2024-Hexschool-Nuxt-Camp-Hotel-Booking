@@ -4,8 +4,6 @@ useSeoMeta({ title: '註冊會員' });
 
 //
 
-import { zipCodeList } from '@/assets/zipcodes.js';
-
 import { Icon } from '@iconify/vue';
 
 import { Field, Form, ErrorMessage, defineRule, configure } from "vee-validate";
@@ -38,6 +36,8 @@ setLocale('zhTW');
 
 // composables
 
+const { address, cityList, countyList, addressToZipCode } = useAddress();
+
 const { translateMessage, phoneFormat } = useValidation();
 
 // pinia store
@@ -66,35 +66,7 @@ const isAgreePrivacyPolicy = ref(false);
 
 const { minYear, date, days } = useDate();
 
-const birthday = computed(() => `${date.year}/${date.month}/${date.day}`);
-
-// 地址
-
-const address = reactive({ city: '臺北市', county: '中正區' });
-
-watch(() => address.city, () => address.county = '');
-
-const groupByCity = computed(() => {
-
-    const result = {};
-
-    zipCodeList.map(value => value.city).forEach(city => {
-
-        if (!result[city]) { result[city] = zipCodeList.filter(value => value.city === city) }
-
-    });
-
-    return result;
-
-});
-
-const cityList = Object.keys(groupByCity.value);
-
-const countyList = computed(() => {
-
-    return groupByCity.value[address.city].map(value => value.county);
-
-});
+const birthday = computed(() => `${date.value.year}/${date.value.month}/${date.value.day}`);
 
 //
 
@@ -113,8 +85,8 @@ const isFormFinished = computed(() => {
     && signUpFormData.value.password
     && signUpFormData.value.password === confirmPassword.value
     && signUpFormData.value.phone
-    && address.city
-    && address.county
+    && date.value.year && date.value.month && date.value.day
+    && address.value.city && address.value.county
     && signUpFormData.value.address.detail
     && isAgreePrivacyPolicy.value
 
@@ -130,11 +102,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
 
     const data = { ...signUpFormData.value, birthday: birthday.value };
     
-    data.address.zipcode = zipCodeList.find(value => {
-
-        return value.city === address.city && value.county === address.county
-
-    }).zipcode;
+    data.address.zipcode = addressToZipCode(address.value);
 
     // console.log(data);
 
@@ -157,7 +125,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
         })
         .finally(() => { isPending.value = false });
 
-}
+};
 
 </script>
 
@@ -274,7 +242,8 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                     class="btn btn-neutral-200 w-100 py-4
                     text-neutral-700 fw-bold"
                     type="button"
-                    :disabled="!isEmailAndPasswordValid || isPending"
+                    :disabled="!isEmailAndPasswordValid || isPending
+                    || errors['email'] || errors['password'] || errors['confirmPassword']"
                     @click="signUpStep = 2">
                     下一步
                 </button>
@@ -329,22 +298,24 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                             id="birth"
                             class="form-select p-4 rounded-3"
                             v-model="date.year">
-                            <option value="" selected disabled>年</option>
-                            <option
-                                v-for="(year, index) in 83" :key="year"
-                                :value="`${year + minYear - 1}`">
+                            <option value="" disabled>年</option>
+                            <option v-for="year in 83" :key="year" :value="`${year + minYear - 1}`">
                                 {{ year + minYear - 1 }}
                             </option>
                         </select>
                         <select
                             v-model="date.month"
                             class="form-select p-4 rounded-3">
-                            <option v-for="month in 12" :key="month" :value="month">{{ month }}</option>
+                            <option v-for="month in 12" :key="month" :value="month">
+                                {{ month }}
+                            </option>
                         </select>
                         <select
                             v-model="date.day"
                             class="form-select p-4 rounded-3">
-                            <option v-for="day in days" :key="day" :value="day">{{ day }}</option>
+                            <option v-for="day in days" :key="day" :value="day">
+                                {{ day }}
+                            </option>
                         </select>
                     </div>
                 </div>
