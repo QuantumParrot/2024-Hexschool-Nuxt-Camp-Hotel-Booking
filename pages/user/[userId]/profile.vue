@@ -6,18 +6,14 @@ useSeoMeta({ title: '個人資料' });
 
 import { Field, Form, ErrorMessage, defineRule, configure } from "vee-validate";
 
-import { required, confirmed, email, min } from '@vee-validate/rules';
+import { required, confirmed } from '@vee-validate/rules';
 
 import { setLocale, localize } from '@vee-validate/i18n';
 
 import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 
-//
-
 defineRule('confirmed', confirmed);
 defineRule('required', required);
-defineRule('email', email);
-defineRule('min', min);
 
 configure({
     
@@ -28,49 +24,58 @@ configure({
 
 setLocale('zhTW');
 
-// pinia
+//
 
 import useUserStore from '@/stores/user';
 
 const userStore = useUserStore();
 
-// composables
-
-const { $dateformat } = useNuxtApp();
-
-const { minYear, date, days } = useDate();
-
-const { address, cityList, countyList, addressToZipCode, zipCodeToAddress } = useAddress();
-
-const { translateMessage, phoneFormat } = useValidation();
-
-//
-
-const isEditPassword = ref(false);
-
-const isEditUserProfile = ref(false);
-
-//
-
 const { getUserData, updateUserData } = userStore;
 
 const { userData } = storeToRefs(userStore);
 
-const userDataTemp = ref({ name: '資料讀取中', phone: '資料讀取中', address: {} });
+// composables
 
-const birthday = computed(() => `${date.value.year}/${date.value.month}/${date.value.day}`);
+const { $dateformat } = useNuxtApp();
+
+const {
+    
+    address, cityList, countyList,
+    addressToZipCode, zipCodeToAddress, setAddress
+
+} = useAddress();
+
+const { minYear, date, days, setDate } = useDate();
+
+const { translateMessage, phoneFormat, passwordFormat } = useValidation();
 
 //
 
+const userDataTemp = ref({ name: '資料讀取中', phone: '資料讀取中', address: {} });
+
+const birthday = computed(() => `${date.value.year}/${date.value.mon}/${date.value.day}`);
+
+//
+
+
 const initUserData = () => {
 
-    userDataTemp.value = JSON.parse(JSON.stringify(userData.value));
+    const { name, phone } = userData.value
 
-    address.value = zipCodeToAddress(userData.value.address.zipcode);
+    userDataTemp.value = {
+
+        name, phone,
+        address: { detail: userData.value.address.detail }
+
+    };
+
+    setAddress(zipCodeToAddress(userData.value.address.zipcode));
 
     const birth = new Date(userData.value.birthday);
 
-    date.value = { 'year': birth.getFullYear(), 'month': birth.getMonth() + 1, 'day': birth.getDate() }
+    setDate({ year: birth.getFullYear(), mon: birth.getMonth() + 1, day: birth.getDate() });
+    
+    // console.log(userDataTemp.value);
 
 }
 
@@ -85,16 +90,19 @@ onMounted(async () => {
 
     // 如果已經取得資料，不需要再取得一次
 
-    if (!userData.value._id) {
+    if (!userData.value.name) {
 
         await getUserData();
-        initUserData();
 
     }
+
+    initUserData();
 
 });
 
 //
+
+const isEditUserProfile = ref(false);
 
 const isPending = ref(false);
 
@@ -102,7 +110,7 @@ const isDataFinished = computed(() => {
 
     return userDataTemp.value.name
     && userDataTemp.value.phone
-    && date.value.year && date.value.month && date.value.day
+    && date.value.year && date.value.mon && date.value.day
     && address.value.city && address.value.county
     && userDataTemp.value.address.detail
     
@@ -128,9 +136,9 @@ const handleUpdateDataProcess = (formData) => {
     newData.birthday = birthday.value;
 
     updateUserData(newData)
-        .then(() => {
+        .then((res) => {
             
-            window.location.reload();
+            if (res.status) { window.location.reload(); }
         
         })
         .catch((error) => {
@@ -140,7 +148,54 @@ const handleUpdateDataProcess = (formData) => {
         })
         .finally(() => { isPending.value = false; })
 
-}
+};
+
+//
+
+const isEditPassword = ref(false);
+
+const currentPassword = ref('');
+const newPassword = ref('');
+const confirmNewPassword = ref('');
+
+const clearPasswordForm = () => {
+
+    isEditPassword.value = false;
+
+    currentPassword.value = '';
+    newPassword.value = '';
+    confirmNewPassword.value = '';
+
+};
+
+const handleUpdatePassword = (formData) => {
+
+    if (isPending.value) return;
+
+    isPending.value = true;
+
+    const data = {
+
+        userId: userData.value._id,
+        oldPassword: formData['old-password'],
+        newPassword: formData['new-password']
+
+    };
+
+    updateUserData(data)
+        .then((res) => {
+            
+            if (res.status) { window.location.reload(); }
+        
+        })
+        .catch((error) => {
+        
+            if (import.meta.env.DEV) { console.log(error); }
+        
+        })
+        .finally(() => { isPending.value = false; })
+
+};
 
 </script>
 
@@ -188,47 +243,75 @@ const handleUpdateDataProcess = (formData) => {
                             重設密碼
                         </button>
                     </div>
-                    <div class="d-flex flex-column gap-4 gap-md-6" v-else>
-                        <div>
-                            <label
-                                for="old-password"
-                                class="form-label fs-8 fs-md-7 fw-bold">
-                                舊密碼
-                            </label>
-                            <input
-                                id="old-password" type="password"
-                                class="form-control fs-7 p-4 rounded-3"
-                                placeholder="請輸入舊密碼">
+                    <Form v-slot="{ errors, meta }" @submit="handleUpdatePassword" v-else>
+                        <div class="d-flex flex-column gap-4 gap-md-6">
+                            <div>
+                                <label
+                                    for="oldPassword"
+                                    class="form-label fs-8 fs-md-7 fw-bold">
+                                    舊密碼
+                                </label>
+                                <Field
+                                    type="password" id="old-password" name="old-password"
+                                    class="form-control fs-7 p-4 rounded-3"
+                                    :class="{ 'is-invalid': errors['old-password'] }"
+                                    placeholder="請輸入舊密碼"
+                                    v-model.trim="currentPassword"
+                                    :rules="passwordFormat" />
+                                <ErrorMessage name="old-password" class="invalid-feedback mt-3 mb-0" />
+                            </div>
+                            <div>
+                                <label
+                                    for="new-password"
+                                    class="form-label fs-8 fs-md-7 fw-bold">
+                                    新密碼
+                                </label>
+                                <Field
+                                    type="password" id="new-password" name="new-password"
+                                    class="form-control fs-7 p-4 rounded-3"
+                                    :class="{ 'is-invalid': errors['new-password'] }"
+                                    placeholder="請輸入新密碼"
+                                    v-model.trim="newPassword"
+                                    :rules="passwordFormat" />
+                                <ErrorMessage name="new-password" class="invalid-feedback mt-3 mb-0" />
+                            </div>
+                            <div>
+                                <label
+                                    for="confirm-password"
+                                    class="form-label fs-8 fs-md-7 fw-bold">
+                                    確認新密碼
+                                </label>
+                                <Field
+                                    type="password" id="confirm-password" name="confirm-password" 
+                                    class="form-control fs-7 p-4 rounded-3"
+                                    :class="{ 'is-invalid': errors['confirm-password'] }"
+                                    placeholder="請再輸入一次新密碼"
+                                    v-model.trim="confirmNewPassword"
+                                    rules="confirmed:@new-password" />
+                                <ErrorMessage name="confirm-password" v-slot="{ message }">
+                                    <p class="invalid-feedback mt-3 mb-0">
+                                    {{ message.replace('confirm-password ', '密碼') }}
+                                    </p>
+                                </ErrorMessage>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button
+                                    class="btn btn-primary-600 px-8 py-4 rounded-3
+                                    align-self-start"
+                                    type="submit"
+                                    :disabled="!meta.valid || isPending">
+                                    儲存設定
+                                </button>
+                                <button
+                                    class="btn btn-neutral-300 px-8 py-4 rounded-3
+                                    align-self-start text-neutral-600"
+                                    type="button"
+                                    @click="clearPasswordForm">
+                                    取消修改
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <label
-                                for="new-password"
-                                class="form-label fs-8 fs-md-7 fw-bold">
-                                新密碼
-                            </label>
-                            <input
-                                id="new-password" type="password"
-                                class="form-control fs-7 p-4 rounded-3"
-                                placeholder="請輸入新密碼">
-                        </div>
-                        <div>
-                            <label
-                                for="confirm-password"
-                                class="form-label fs-8 fs-md-7 fw-bold">
-                                確認新密碼
-                            </label>
-                            <input
-                                id="confirm-password" type="password"
-                                class="form-control fs-7 p-4 rounded-3"
-                                placeholder="請再輸入一次新密碼">
-                        </div>
-                        <button
-                            class="btn btn-neutral-300 px-8 py-4 rounded-3
-                            align-self-md-start text-neutral-400"
-                            type="button" @click="isEditPassword = false">
-                            儲存設定
-                        </button>
-                    </div>
+                    </Form>
                 </div>
             </section>
         </div>
@@ -257,7 +340,7 @@ const handleUpdateDataProcess = (formData) => {
                                 v-model.trim="userDataTemp.name"
                                 rules="required" />
                             <ErrorMessage name="name" v-slot="{ message }">
-                                <p class="invalid-feedback">{{ translateMessage(message, 'name') }}</p>
+                                <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'name') }}</p>
                             </ErrorMessage>
                         </div>
                         <div class="fs-8 fs-md-7">
@@ -275,7 +358,7 @@ const handleUpdateDataProcess = (formData) => {
                                 v-model.trim="userDataTemp.phone"
                                 :rules="phoneFormat" />
                             <ErrorMessage name="phone" v-slot="{ message }">
-                                <p class="invalid-feedback">{{ translateMessage(message, 'phone') }}</p>
+                                <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'phone') }}</p>
                             </ErrorMessage>
                         </div>
                         <div class="fs-8 fs-md-7">
@@ -305,20 +388,16 @@ const handleUpdateDataProcess = (formData) => {
                                 </select>
                                 <select
                                     class="form-select p-4 rounded-3 text-neutral-500 fw-medium"
-                                    v-model="date.month">
-                                    <template v-for="mon in 12" :key="mon">
-                                        <option :value="mon">
-                                        {{ mon }}
-                                        </option>
+                                    v-model="date.mon">
+                                    <template v-for="month in 12" :key="month">
+                                        <option :value="month">{{ month }}</option>
                                     </template>
                                 </select>
                                 <select
                                     class="form-select p-4 rounded-3 text-neutral-500 fw-medium"
                                     v-model="date.day">
                                     <template v-for="day in days" :key="day">
-                                        <option :value="day">
-                                        {{ day }}
-                                        </option>
+                                        <option :value="day">{{ day }}</option>
                                     </template>
                                 </select>
                             </div>

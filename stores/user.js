@@ -94,6 +94,8 @@ export default defineStore('user', () => {
                 showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' });
 
             }
+
+            return error.data;
             
         }
 
