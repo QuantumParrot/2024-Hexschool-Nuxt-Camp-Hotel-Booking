@@ -1,7 +1,5 @@
 export const useDate = () => {
 
-    let isRemoteUpdating = false;
-
     const minYear = new Date().getFullYear() - 100;
 
     const oddMonths = [1, 3, 5, 7, 8, 10, 12];
@@ -18,22 +16,11 @@ export const useDate = () => {
 
     });
 
-    const setDate = async (dateObject) => {
-
-        isRemoteUpdating = true;
-        date.value = dateObject;
-
-        await nextTick();
-
-        isRemoteUpdating = false;
-        
-    }
+    const setDate = (dateObject) => { date.value = dateObject; }
 
     watch(() => date.value.mon, () => {
 
-        if (isRemoteUpdating) return;
-        
-        date.value.day = 1;
+        if (date.value.day > days.value) { date.value.day = 1; }
  
     });
 

@@ -2,8 +2,6 @@ import { zipCodeList } from '@/assets/zipcodes.js';
 
 export const useAddress = () => {
 
-    let isRemoteUpdating = false;
-
     const address = ref({ city: '臺北市', county: '中正區' });
 
     const groupByCity = computed(() => {
@@ -71,25 +69,47 @@ export const useAddress = () => {
 
     };
 
-    const setAddress = async (addressObject) => {
+    const setAddress = (addressObject) => {
 
-        isRemoteUpdating = true;
         address.value = addressObject;
-
-        await nextTick();
-        
-        isRemoteUpdating = false;
 
     }
 
     watch(() => address.value.city, () => {
 
-        if (isRemoteUpdating) return;
-
-        address.value.county = '';
+        if (!countyList.value.includes(address.value.county)) { address.value.county = ''; }
     
     });
 
     return { address, cityList, countyList, addressToZipCode, zipCodeToAddress, setAddress }
 
 };
+
+/*
+
+原本使用的監聽方式
+
+let isRemoteUpdating = false;
+
+const setAddress = async (addressObject) => {
+
+    isRemoteUpdating = true;
+    address.value = addressObject;
+
+    await nextTick();
+    
+    isRemoteUpdating = false;
+
+    // 使用 nextTick 讓 `isRemoteUpdating = false` 在 watch 完之後執行
+
+};
+
+watch(() => address.value.city, () => {
+
+    if (isRemoteUpdating) return;
+
+    address.value.county = '';
+
+});
+
+*/
