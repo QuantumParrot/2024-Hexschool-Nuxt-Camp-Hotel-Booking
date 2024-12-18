@@ -2,9 +2,9 @@ import { zipCodeList } from '@/assets/zipcodes.js';
 
 export const useAddress = () => {
 
-    const address = ref({ city: '臺北市', county: '中正區' });
+    let isRemoteUpdating = false;
 
-    watch(() => address.value.city, () => address.value.county = '');
+    const address = ref({ city: '臺北市', county: '中正區' });
 
     const groupByCity = computed(() => {
 
@@ -65,12 +65,31 @@ export const useAddress = () => {
 
             return data.zipcode === zipcode;
 
-        })
+        });
 
         return { city: result.city, county: result.county }
 
     };
 
-    return { address, cityList, countyList, addressToZipCode, zipCodeToAddress }
+    const setAddress = async (addressObject) => {
+
+        isRemoteUpdating = true;
+        address.value = addressObject;
+
+        await nextTick();
+        
+        isRemoteUpdating = false;
+
+    }
+
+    watch(() => address.value.city, () => {
+
+        if (isRemoteUpdating) return;
+
+        address.value.county = '';
+    
+    });
+
+    return { address, cityList, countyList, addressToZipCode, zipCodeToAddress, setAddress }
 
 };

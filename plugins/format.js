@@ -14,12 +14,12 @@ export default defineNuxtPlugin((nuxtApp) => {
                 
             },
 
-            dateformat: (timestamp, formation = 'YYYY-MM-DD') => {
+            dateformat: (time, formation = 'YYYY-MM-DD') => {
                 
-                return moment(timestamp).format(formation);
+                return moment(time).format(formation);
             
-            },
-
+            }
+            
         }
 
     }

@@ -24,8 +24,14 @@ export const useValidation = () => {
 
     const passwordFormat = (value) => {
 
+        if (value.length < 8) return '密碼不能小於 8 個字元';
+
+        if (!/\d+/.test(value) || !/[A-Za-z]+/.test(value)) return '密碼必須為英數混合';
+
+        return true;
+
     };
 
-    return { translateMessage, phoneFormat }
+    return { translateMessage, phoneFormat, passwordFormat }
 
 };

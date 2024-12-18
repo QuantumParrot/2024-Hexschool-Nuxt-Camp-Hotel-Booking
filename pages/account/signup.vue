@@ -66,7 +66,7 @@ const isAgreePrivacyPolicy = ref(false);
 
 const { minYear, date, days } = useDate();
 
-const birthday = computed(() => `${date.value.year}/${date.value.month}/${date.value.day}`);
+const birthday = computed(() => `${date.value.year}/${date.value.mon}/${date.value.day}`);
 
 //
 
@@ -85,7 +85,7 @@ const isFormFinished = computed(() => {
     && signUpFormData.value.password
     && signUpFormData.value.password === confirmPassword.value
     && signUpFormData.value.phone
-    && date.value.year && date.value.month && date.value.day
+    && date.value.year && date.value.mon && date.value.day
     && address.value.city && address.value.county
     && signUpFormData.value.address.detail
     && isAgreePrivacyPolicy.value
@@ -304,7 +304,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                             </option>
                         </select>
                         <select
-                            v-model="date.month"
+                            v-model="date.mon"
                             class="form-select p-4 rounded-3">
                             <option v-for="month in 12" :key="month" :value="month">
                                 {{ month }}
