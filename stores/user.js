@@ -4,18 +4,22 @@ export default defineStore('user', () => {
 
     const { showToastAlert } = useAlert();
 
-    // client-side only
+    // get them in client-side
 
     const userData = ref({ address: {} });
 
-    // server-side only
+    // get them in server-side
 
     const username = ref('');
     const userId = ref('');
 
     const getUserData = async () => {
 
-        // console.trace('執行 get user data');
+        /***/
+
+        if (import.meta.env.DEV) { console.trace('pinia store: get user data'); }
+
+        /***/
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 

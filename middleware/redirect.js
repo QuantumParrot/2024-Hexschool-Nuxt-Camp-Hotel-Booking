@@ -10,8 +10,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
     const redirectPath = from.query.redirect && from.query.redirect.split('/')[1];
 
-    // console.log(redirectPath);
-
     if (!isLoggedIn.value && (redirectPath === 'user' || redirectPath === 'admin')) {
 
         showToastAlert({ icon: 'warning', text: '請重新登入' });

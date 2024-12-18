@@ -12,11 +12,15 @@ export default defineStore("auth", () => {
 
     const checkAuth = async () => {
 
-        // console.trace('執行 check auth');
-
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 
         if (!token.value) return;
+
+        /***/
+
+        if (import.meta.env.DEV) { console.trace('pinia store: check auth'); }
+
+        /***/
 
         try {
 
@@ -96,7 +100,7 @@ export default defineStore("auth", () => {
 
             isLoggedIn.value = true;
 
-            return res.result.id;
+            return res.result._id;
 
         } catch (error) {
 

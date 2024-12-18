@@ -7,21 +7,29 @@ import { Icon } from '@iconify/vue';
 import useAuthStore from '@/stores/auth';
 import useUserStore from '@/stores/user';
 
-//
-
-const { $bootstrap } = useNuxtApp();
-
-const route = useRoute();
-
-//
-
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
 const { isLoggedIn } = storeToRefs(authStore);
-const { logout } = authStore;
+const { checkAuth, logout } = authStore;
 
 const { userId, username } = storeToRefs(userStore);
+const { getUserData } = userStore;
+
+if (import.meta.server) {
+    
+    await checkAuth();
+
+    // 若是已經登入，則在 server 端 "只" 取得用戶的 id ( 用來渲染 NuxtLink ) 和用戶名稱
+
+    if (isLoggedIn.value) { await getUserData(); }
+
+}
+
+//
+
+const { $bootstrap } = useNuxtApp();
+const route = useRoute();
 
 // 操作 collapse
 
@@ -73,7 +81,7 @@ const bgColor = computed(() => {
     <nav class="navbar navbar-expand-md px-3 py-4 px-md-20 py-md-6">
         <div class="container-fluid p-0">
             <NuxtLink class="navbar-brand p-0" to="/">
-                <img src="/images/logo-white.svg" alt="LOGO" class="logo">
+                <img src="/images/logo-white.svg" alt="Enjoyment Luxury Hotel Logo" class="logo">
             </NuxtLink>
             <button
                 class="navbar-toggler p-2 border-0 shadow-none text-white collapsed"

@@ -67,9 +67,11 @@ const handleLoginProcess = (loginData, { resetForm }) => {
     sendLoginAuth(loginData)
         .then((id) => {
 
-            // console.log(id);
-
-            setTimeout(() => { router.replace(`/user/${id}`); }, 1500);
+            setTimeout(() => {
+                
+                router.replace(`/user/${id}`);
+            
+            }, 1500);
 
         })
         .catch((error) => {
