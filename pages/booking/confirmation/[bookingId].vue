@@ -1,12 +1,58 @@
 <script setup>
 
+useSeoMeta({ title: '預約成功' });
+
+definePageMeta({ middleware: ['auth'] });
+
+//
+
 import { Icon } from '@iconify/vue';
+
+import useUserStore from '@/stores/user';
+import useCacheStore from '@/stores/cache';
+import useBookingStore from '@/stores/booking';
+
+const userStore = useUserStore();
+const cacheStore = useCacheStore();
+const bookingStore = useBookingStore();
+
+const { userId } = storeToRefs(userStore);
+const { bookingCache } = storeToRefs(cacheStore);
+const { discountPrice } = storeToRefs(bookingStore);
+
+//
 
 const route = useRoute();
 
+const { $dateformat, $toThousands } = useNuxtApp();
+const { getDays } = useCalculator();
+
 const bookingId = ref(route.params.bookingId);
 
-useSeoMeta({ title: '預約成功' });
+const days = computed(() => {
+
+    if (bookingCache.value._id) {
+
+        const { checkInDate, checkOutDate } = bookingCache.value;
+
+        return getDays(checkInDate, checkOutDate);
+
+    }
+
+    return 0;
+
+});
+
+onMounted(async() => {
+
+    if (!bookingCache.value._id) {
+
+        const { result } = await bookingStore.getOrder(bookingId.value);
+        cacheStore.$patch({ bookingCache: result });
+
+    }
+
+});
 
 </script>
 
@@ -28,7 +74,7 @@ useSeoMeta({ title: '預約成功' });
                     />
                     <div class="text-neutral-100 fs-1">
                         <h1 class="fw-bold">
-                        恭喜，Jessica！
+                        恭喜，{{ bookingCache.userInfo?.name }}！
                         </h1>
                         <p class="fw-bold mb-0">您已預訂成功</p>
                     </div>
@@ -44,7 +90,7 @@ useSeoMeta({ title: '預約成功' });
                     立即查看您的訂單記錄
                     </h2>
                     <NuxtLink
-                        :to="{ name: 'user-userId-order', params: { userId: 'jessica' } }"
+                        :to="{ name: 'user-userId-order', params: { userId } }"
                         class="btn btn-primary-600 px-md-15 py-4 border-0 rounded-3
                         text-neutral-100 fw-bold">
                         前往我的訂單
@@ -59,15 +105,21 @@ useSeoMeta({ title: '預約成功' });
                 <div class="d-flex flex-column gap-6">
                     <div>
                         <p class="text-neutral-300 fw-medium mb-2">姓名</p>
-                        <span class="text-neutral-100 fw-bold">Jessica Wang</span>
+                        <span class="text-neutral-100 fw-bold">
+                        {{ bookingCache.userInfo?.name }}
+                        </span>
                     </div>
                     <div>
                         <p class="text-neutral-300 fw-medium mb-2">手機號碼</p>
-                        <span class="text-neutral-100 fw-bold">+886 912 345 678</span>
+                        <span class="text-neutral-100 fw-bold">
+                        {{ bookingCache.userInfo?.phone }}
+                        </span>
                     </div>
                     <div>
                         <p class="text-neutral-300 fw-medium mb-2">電子信箱</p>
-                        <span class="text-neutral-100 fw-bold">jessica@sample.com</span>
+                        <span class="text-neutral-100 fw-bold">
+                        {{ bookingCache.userInfo?.email }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -76,34 +128,39 @@ useSeoMeta({ title: '預約成功' });
                     class="booking-card bg-neutral-100 p-4 p-md-10 mx-auto ms-md-auto
                     d-flex flex-column gap-6 gap-md-10">
                     <div>
-                        <p class="text-neutral-500 fs-8 fs-md-7 fw-medium mb-2">
-                        預定參考編號：{{ bookingId }}
-                        </p>
-                        <h2 class="text-neutral-600 fs-7 fs-md-5 fw-bold mb-0">即將來的行程</h2>
+                        <h2 class="text-neutral-600 fs-7 fs-md-5 fw-bold mb-0">您的行程</h2>
                     </div>
                     <img
                         class="img-fluid rounded-2"
-                        src="/images/room-a-1.png" alt="room-a">
+                        :src="bookingCache.roomId?.imageUrl" :alt="bookingCache.roomId?.name">
                     <section class="d-flex flex-column gap-6">
                         <h3 
                             class="d-flex align-items-center
                             text-neutral-500 fs-8 fs-md-6 fw-bold mb-6">
-                            <p class="mb-0">尊爵雙人房，1 晚</p>
+                            <p class="mb-0">
+                                {{ bookingCache.roomId?.name }}，{{ days }} 晚
+                            </p>
                             <span
                                 class="bg-neutral-500 d-inline-block mx-4"
                                 style="width: 1px; height: 18px;">
                             </span>
-                            <p class="mb-0">住宿人數：2 位</p>
+                            <p class="mb-0">住宿人數：{{ bookingCache.peopleNum }} 位</p>
                         </h3>
                         <div class="text-neutral-500 fs-8 fs-md-7 fw-bold">
                             <p class="title-deco primary mb-2">
-                            入住：11 月 24 日星期日，18:00 可入住
+                            入住：
+                            {{ $dateformat(bookingCache.checkInDate, 'YYYY 年 MM 月 DD 日') }}
+                            15:00 可入住
                             </p>
                             <p class="title-deco neutral mb-0">
-                            退房：11 月 25 日星期一，12:00 前退房
+                            退房：
+                            {{ $dateformat(bookingCache.checkOutDate, 'YYYY 年 MM 月 DD 日') }}
+                            12:00 前退房
                             </p>
                         </div>
-                        <p class="text-neutral-500 fs-8 fs-md-7 fw-bold">NT$ 10,000</p>
+                        <p class="text-neutral-500 fs-8 fs-md-7 fw-bold">
+                            NT$ {{ $toThousands(bookingCache.roomId?.price * days - discountPrice) }}
+                        </p>
                     </section>
                     <hr class="my-0 opacity-100 text-neutral-300">
                     <section>
@@ -118,46 +175,14 @@ useSeoMeta({ title: '預約成功' });
                             rounded-3 list-unstyled
                             d-flex flex-wrap row-gap-2 column-gap-10
                             fs-8 fs-md-7">
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">電視</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">吹風機</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">冰箱</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">熱水壺</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">檯燈</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">衣櫃</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">除濕機</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">浴缸</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">書桌</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">音響</p>
-                            </li>
+                            <template
+                                v-for="item in bookingCache.roomId?.facilityInfo"
+                                :key="item.title">
+                                <li class="flex-item d-flex gap-2">
+                                    <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
+                                    <p class="text-neutral-500 fw-bold mb-0">{{ item.title }}</p>
+                                </li>
+                            </template>
                         </ul>
                     </section>
                     <section>
@@ -172,46 +197,14 @@ useSeoMeta({ title: '預約成功' });
                             rounded-3 list-unstyled
                             d-flex flex-wrap row-gap-2 column-gap-10
                             fs-8 fs-md-7">
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">衛生紙</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">沐浴用品</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">拖鞋</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">刮鬍刀</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">清潔用品</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">吊衣架</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">浴巾</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">刷牙用品</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">罐裝水</p>
-                            </li>
-                            <li class="flex-item d-flex gap-2">
-                                <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
-                                <p class="text-neutral-500 fw-bold mb-0">梳子</p>
-                            </li>
+                            <template
+                                v-for="item in bookingCache.roomId?.amenityInfo"
+                                :key="item.title">
+                                <li class="flex-item d-flex gap-2">
+                                    <Icon class="fs-5 text-primary-600" icon="material-symbols:check" />
+                                    <p class="text-neutral-500 fw-bold mb-0">{{ item.title }}</p>
+                                </li>
+                            </template>
                         </ul>
                     </section>
                 </div>
@@ -264,7 +257,7 @@ useSeoMeta({ title: '預約成功' });
 
 .flex-item {
 
-  flex: 1 1 25%;
+  flex: 1 1 30%;
   white-space: nowrap;
 
   @include media-breakpoint-down(md) { flex-basis: 40%; }

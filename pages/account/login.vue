@@ -43,12 +43,7 @@ const { sendLoginAuth } = useAuthStore();
 
 //
 
-const loginFormData = ref({
-
-    email: 'jessica@sample.com',
-    password: 'congrats1to1team2taiwan4',
-
-});
+const loginFormData = ref({ email: '', password: '' });
 
 const isFormFinished = computed(() => {
 

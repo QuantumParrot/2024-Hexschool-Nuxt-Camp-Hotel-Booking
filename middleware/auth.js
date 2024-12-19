@@ -1,6 +1,8 @@
 /*
 
-使用的頁面：/user/* || /admin/* || /account/*
+使用的頁面
+
+/user/* || /admin/* || /account/* || /booking/confirmation/[bookingId]
 
 */
 
@@ -17,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const { isLoggedIn } = storeToRefs(authStore);
     const { userId } = storeToRefs(userStore);
 
-    if (import.meta.client || isLoggedIn.value) return;
+    if (import.meta.client) return;
 
     /***/
 
@@ -84,6 +86,12 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                 redirectCode: 302
 
             });
+
+        };
+
+        if (currentDir === 'booking') {
+
+            return navigateTo('/', { replace: true, redirectCode: 302 });
 
         }
 

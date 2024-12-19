@@ -68,11 +68,15 @@ export default defineStore("auth", () => {
 
                 // throw new Error(message);
 
+                return;
+
             } else {
 
                 showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' })
 
                 // console.error(error.data);
+
+                return;
 
             }
             
@@ -110,13 +114,13 @@ export default defineStore("auth", () => {
 
                 showToastAlert({ icon: 'warning', text: message });
 
-                // throw new Error(message);
+                throw new Error(message);
 
             } else {
 
                 showToastAlert({ icon: 'error', text: '出現錯誤，請稍候再試' });
 
-                // console.error(error.data);
+                console.error(error.data);
 
             }
 

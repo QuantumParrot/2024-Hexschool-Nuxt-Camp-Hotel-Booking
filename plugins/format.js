@@ -6,7 +6,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         provide: {
 
-            toThousands: (number) => {
+            toThousands: (number = 0) => {
 
                 return number.toString().split('.')
                 .map((item, index) => index === 0 ? item.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : item)

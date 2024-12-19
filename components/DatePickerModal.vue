@@ -2,8 +2,6 @@
 
 import { useScreens } from 'vue-screen-utils';
 
-import { Icon } from '@iconify/vue';
-
 //
 
 const { mapCurrent } = useScreens({ 'md': '768px' })
@@ -99,6 +97,9 @@ const resetDate = () => {
 
     tempDate.range.start = null;
     tempDate.range.end = null;
+
+    emits('confirm-date', { ...tempDate, days: days.value });
+
     tempDate.key ++;
 
 };

@@ -2,21 +2,46 @@
 
 import { Icon } from '@iconify/vue';
 
+import useBookingStore from '@/stores/booking';
+import useCacheStore from '@/stores/cache';
+import useAuthStore from '@/stores/auth';
+
+const bookingStore = useBookingStore();
+const cacheStore = useCacheStore();
+const authStore = useAuthStore();
+
+const { orderTemplate } = storeToRefs(bookingStore);
+const { isLoggedIn } = storeToRefs(authStore);
+
+//
+
 const { $dateformat, $toThousands } = useNuxtApp();
+
+const { showToastAlert } = useAlert();
+
 const config = useRuntimeConfig();
+
+const router = useRouter();
+
 const route = useRoute();
+
+//
 
 const id = ref(route.params.id);
 
 //
 
-const { data:room } = await useAsyncData(() => {
+const { data:room } = await useAsyncData(async() => {
 
-    return $fetch(`api/v1/rooms/${id.value}`, {
+    const res = await $fetch(`api/v1/rooms/${id.value}`, {
 
         baseURL: config.public.apiUrl,
 
-    })
+    });
+
+    cacheStore.$patch({ roomCache: res.result });
+
+    return res;
 
 }, {
 
@@ -33,24 +58,12 @@ const { data:room } = await useAsyncData(() => {
 
 });
 
-// 
-
-const title = ref(room.value.name);
-
-useSeoMeta({ title })
-
 //
 
 const maxBookingNumber = ref(room.value.maxPeople);
-const bookingClientNumber = ref(1);
+const bookingClientNumber = ref(orderTemplate.value.peopleNum || 1);
 
 const updateClientNumber = (num) => { bookingClientNumber.value = num }
-
-//
-
-const modal = ref(null);
-
-const showModal = () => { modal.value.showModal(); }
 
 //
 
@@ -71,6 +84,19 @@ const bookingDate = reactive({
 
 });
 
+onMounted(() => {
+
+    if (orderTemplate.value.roomId) {
+
+        bookingDate.range.start = orderTemplate.value.checkInDate;
+        bookingDate.range.end = orderTemplate.value.checkOutDate;
+
+    }
+
+});
+
+// emit
+
 const confirmDate = (date) => {
 
     bookingDate.range.start = date.range.start;
@@ -79,11 +105,56 @@ const confirmDate = (date) => {
 
     if (date.clients) { bookingClientNumber.value = date.clients }
 
-}
+};
+
+//
+
+const handleBookingProcess = async () => {
+
+    if (!bookingDate.range.start || !bookingDate.range.end) {
+
+        showToastAlert({ icon: 'warning', text: '請填寫預訂日期' });
+        return;
+
+    }
+
+    bookingStore.$patch({
+
+        orderTemplate: {
+
+            ...orderTemplate.value,
+
+            roomId: id.value,
+            checkInDate: bookingDate.range.start,
+            checkOutDate: bookingDate.range.end,
+            peopleNum: bookingClientNumber.value,
+            days: days.value,
+            
+        }
+
+    });
+
+    router.push(`/rooms/${id.value}/booking`);
+
+};
+
+//
+
+const modal = ref(null);
+
+const showModal = () => { modal.value.showModal(); }
+
+//
+
+const title = ref(room.value.name);
+
+useSeoMeta({ title });
 
 </script>
 
 <template>
+
+<div>
 
 <section class="bg-primary-100 p-md-20">
     <div class="d-none d-md-block position-relative">
@@ -304,12 +375,22 @@ const confirmDate = (date) => {
                     <h5 class="text-primary-600 fw-bold mb-0">
                     NT$ {{ $toThousands(room.price) }}
                     </h5>
-                    <NuxtLink
-                        :to="{ name: 'rooms-id-booking', params: { id } }"
-                        class="btn btn-primary-600 py-4 rounded-3
-                        text-neutral-100 fw-bold">
-                        立即預訂
-                    </NuxtLink>
+                    <template v-if="isLoggedIn">
+                        <button
+                            class="btn btn-primary-600 py-4 rounded-3
+                            text-neutral-100 fw-bold"
+                            type="button" @click="handleBookingProcess">
+                            立即預訂
+                        </button>
+                    </template>
+                    <template v-else>
+                        <NuxtLink
+                            class="btn btn-primary-600 py-4 rounded-3
+                            text-neutral-100 fw-bold"
+                            to="/account/login">
+                            請先登入
+                        </NuxtLink>
+                    </template>
                 </div>
             </div>
         </div>
@@ -318,31 +399,43 @@ const confirmDate = (date) => {
         class="d-md-none w-100 p-3 bg-neutral-100
         d-flex justify-content-between align-items-center
         position-fixed bottom-0">
-        <template v-if="!bookingDate.range.end">
-            <small class="text-neutral-500 fw-medium">NT$ {{ $toThousands(room.price) }} / 晚</small>
-            <button
-                class="btn btn-primary-600 px-12 py-4 rounded-3
-                text-neutral-100 fw-bold"
-                type="button" @click="showModal">
-                查看可訂日期
-            </button>
+        <template v-if="isLoggedIn">
+            <template v-if="!bookingDate.range.end">
+                <small class="text-neutral-500 fw-medium">NT$ {{ $toThousands(room.price) }} / 晚</small>
+                <button
+                    class="btn btn-primary-600 px-12 py-4 rounded-3
+                    text-neutral-100 fw-bold"
+                    type="button" @click="showModal">
+                    查看可訂日期
+                </button>
+            </template>
+            <template v-else>
+                <div class="d-flex flex-column gap-1">
+                    <small
+                        class="text-neutral-500 fw-medium">
+                        NT$ {{ $toThousands(room.price) }} × {{ days }} 晚 / {{ bookingClientNumber }} 人
+                    </small>
+                    <span class="text-neutral fs-9 fw-medium text-decoration-underline">
+                    {{ bookingDate.range.start }} ～ {{ bookingDate.range.end }}
+                    </span>
+                </div>
+                <button
+                    class="btn btn-primary-600 px-12 py-4 rounded-3
+                    text-neutral-100 fw-bold"
+                    type="button" @click="handleBookingProcess">
+                    立即預訂
+                </button>
+            </template>
         </template>
         <template v-else>
-            <div class="d-flex flex-column gap-1">
-                <small
-                    class="text-neutral-500 fw-medium">
-                    NT$ {{ $toThousands(room.price) }} × {{ days }} 晚 / {{ bookingClientNumber }} 人
-                </small>
-                <span class="text-neutral fs-9 fw-medium text-decoration-underline">
-                {{ bookingDate.range.start }} ～ {{ bookingDate.range.end }}
-                </span>
+            <div class="w-100 d-flex justify-content-end">
+                <NuxtLink
+                    class="btn btn-primary-600 px-10 py-4 rounded-3
+                    text-neutral-100 fw-bold"
+                    to="/account/login">
+                    請先登入
+                </NuxtLink>
             </div>
-            <NuxtLink
-                :to="{ name: 'rooms-id-booking', params: { id } }"
-                class="btn btn-primary-600 px-12 py-4 rounded-3
-                text-neutral-100 fw-bold">
-                立即預訂
-            </NuxtLink>
         </template>
     </div>
 </section>
@@ -354,6 +447,8 @@ const confirmDate = (date) => {
         :booking-date="bookingDate"
         @confirm-date="confirmDate" />
 </ClientOnly>
+
+</div>
 
 </template>
 
