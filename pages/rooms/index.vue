@@ -1,10 +1,18 @@
 <script setup>
 
+useSeoMeta({ title: '客房旅宿' })
+
+//
+
 import { Icon } from '@iconify/vue';
+
+//
 
 const config = useRuntimeConfig();
 
 const { $toThousands } = useNuxtApp();
+
+//
 
 const { data } = await useAsyncData(() => {
 
@@ -19,8 +27,6 @@ const { data } = await useAsyncData(() => {
     transform: (res) => res.result
 
 });
-
-useSeoMeta({ title: '客房旅宿' })
 
 </script>
 
