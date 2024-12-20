@@ -35,8 +35,8 @@ const otherOrders = ref([]);
 
 onMounted(async() => {
 
-    const { result } = await getOrders();
-    bookingStore.$patch({ orderRecords: result.reverse() });
+    const result = await getOrders();
+    bookingStore.$patch({ orderRecords: result });
 
     latestOrder.value = orders.value[0];
     otherOrders.value = orders.value.filter((o, i) => i !== 0);
@@ -45,7 +45,7 @@ onMounted(async() => {
 
 //
 
-const { showToastAlert, showConfirmAlert } = useAlert();
+const { showConfirmAlert } = useAlert();
 
 const handleCancelProcess = () => {
 

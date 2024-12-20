@@ -86,15 +86,19 @@ export default defineStore('booking', () => {
 
         try {
 
-            return await $fetch('/api/v1/orders', {
+            const res = await $fetch('/api/v1/orders', {
 
                 baseURL: config.public.apiUrl,
                 method: 'GET',
                 headers: { Authorization: token.value }
 
             });
+
+            return res.result.filter(order => order.status !== -1).reverse();
             
         } catch (error) {
+
+            // console.log(error);
 
             const { message } = error.data;
 
