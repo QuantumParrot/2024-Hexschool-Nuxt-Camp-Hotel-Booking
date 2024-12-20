@@ -227,11 +227,11 @@ defineExpose({ showModal });
                         />
                 </div>
                 <div v-else>
-                    <h6 class="text-neutral-600 fw-bold mb-1">
+                    <h6 class="text-neutral-600 fw-bold mb-4">
                     選擇人數
                     </h6>
                     <p class="text-neutral-500 fs-8 fw-medium mb-4">
-                    此房型最多供四人居住，不接受寵物入住。
+                    此房型最多供 {{ maxClientNumber }} 人居住，不接受寵物入住。
                     </p>
                     <NumberCalculator
                         :num="bookingClientNumber" :max="props.maxClientNumber"

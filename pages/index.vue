@@ -728,6 +728,15 @@ onMounted(() => {
 
 }
 
+.overflow-x-auto {
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+
+}
+
 .transporatation .deco-line {
 
   width: 161px;
