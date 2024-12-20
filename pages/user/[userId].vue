@@ -28,7 +28,7 @@ onMounted(() => {
         router.replace({
 
             name: 'user-userId-profile',
-            params: { userId: userId.value }
+            params: { userId: route.params.userId }
             
         });
     

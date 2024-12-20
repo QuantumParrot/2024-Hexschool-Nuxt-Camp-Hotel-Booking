@@ -16,10 +16,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const authStore = useAuthStore();
     const userStore = useUserStore();
 
-    const { isLoggedIn } = storeToRefs(authStore);
     const { userId } = storeToRefs(userStore);
+    const { isLoggedIn } = storeToRefs(authStore);
 
-    if (import.meta.client) return;
+    if (import.meta.client && isLoggedIn.value) return;
 
     /***/
 
@@ -51,7 +51,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
             // 這部分之後再優化處理
         
-        } 
+        }
 
         if (currentDir === 'account') {
 

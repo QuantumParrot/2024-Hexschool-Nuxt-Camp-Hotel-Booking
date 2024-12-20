@@ -64,7 +64,7 @@ const handleLoginProcess = (loginData, { resetForm }) => {
 
             setTimeout(() => {
                 
-                router.replace(`/user/${id}`);
+                router.replace(`/user/${id}/profile`);
             
             }, 1500);
 

@@ -1,30 +1,21 @@
 <script setup>
 
+const props = defineProps(['user-id', 'username']);
+
+const { userId, username } = toRefs(props);
+
+//
+
 import { Icon } from '@iconify/vue';
 
 //
 
 import useAuthStore from '@/stores/auth';
-import useUserStore from '@/stores/user';
 
 const authStore = useAuthStore();
-const userStore = useUserStore();
 
 const { isLoggedIn } = storeToRefs(authStore);
-const { checkAuth, logout } = authStore;
-
-const { userId, username } = storeToRefs(userStore);
-const { getUserData } = userStore;
-
-if (import.meta.server) {
-    
-    await checkAuth();
-
-    // 若是已經登入，則在 server 端 "只" 取得用戶的 id ( 用來渲染 NuxtLink ) 和用戶名稱
-
-    if (isLoggedIn.value) { await getUserData(); }
-
-}
+const { logout } = authStore;
 
 //
 
@@ -106,6 +97,7 @@ const bgColor = computed(() => {
                         </NuxtLink>
                     </li>
                     <li class="nav-item d-none d-md-block" v-if="isLoggedIn">
+                        <ClientOnly>
                         <div class="btn-group">
                             <button
                                 class="nav-link p-4 d-flex gap-2 text-neutral-100"
@@ -132,6 +124,7 @@ const bgColor = computed(() => {
                                 </li>
                             </ul>
                         </div>
+                        </ClientOnly>
                     </li>
                     <template v-else>
                         <li class="nav-iten d-none d-md-block">
@@ -150,11 +143,13 @@ const bgColor = computed(() => {
                         </li>
                     </template>
                     <li class="nav-item d-md-none" v-if="isLoggedIn">
+                        <ClientOnly>
                         <NuxtLink
                             :to="{ name: 'user-userId-profile', params: { userId } }"
                             class="nav-link p-4 text-neutral-100">
                         會員中心
                         </NuxtLink>
+                        </ClientOnly>
                     </li>
                     <li class="nav-item d-md-none" v-else>
                         <NuxtLink
