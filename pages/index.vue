@@ -10,13 +10,47 @@ const isHeroLoading = ref(true);
 
 const config = useRuntimeConfig();
 
+const handleAsyncError = (error) => {
+
+    // 給開發者看的錯誤訊息
+
+    if (!import.meta.env.DEV) return;
+
+    if (error.response._data) {
+
+        console.error(error.response._data.message);
+        console.error(error.response);
+
+    } else {
+      
+        console.error(error);
+    
+    }
+
+}
+
 const { data } = await useAsyncData("hotelInfo", async () => {
 
     return await Promise.allSettled([
 
-        $fetch(`${config.public.apiUrl}/api/v1/home/news`),
-        $fetch(`${config.public.apiUrl}/api/v1/home/culinary`),
-        $fetch(`${config.public.apiUrl}/api/v1/rooms`)
+        $fetch(`/api/v1/home/news`, {
+
+          baseURL: config.public.apiUrl,
+          onResponseError: handleAsyncError
+
+        }),
+        $fetch(`/api/v1/home/culinary`, {
+
+          baseURL: config.public.apiUrl,
+          onResponseError: handleAsyncError
+
+        }),
+        $fetch(`/api/v1/rooms`, {
+
+          baseURL: config.public.apiUrl,
+          onResponseError: handleAsyncError
+
+        })
 
     ])
 
@@ -24,22 +58,15 @@ const { data } = await useAsyncData("hotelInfo", async () => {
 
     transform: (resArr) => {
 
-        return resArr.map((res) => {
+        // console.log('response-array', resArr);
 
-            if (res.status !== 'fulfilled') return;
-            return res.value.result;
-
-        })
+        return resArr.map(res => res.status === 'fulfilled' ? res.value.result : [])
 
     }
 
 });
 
-const news = ref(data.value[0]);
-
-const culinary = ref(data.value[1]);
-
-const rooms = ref(data.value[2]);
+const [ news, culinary, rooms ] = toRefs(data.value);
 
 // 在首頁隨機顯示其中一種房型
 
@@ -47,18 +74,18 @@ const pickup = ref({});
 
 const getRandomRoom = () => {
 
-    if (Array.isArray(rooms.value)) {
-
-        return Math.floor(Math.random() * rooms.value.length);
-
-    }
+    return Math.floor(Math.random() * rooms.value.length);
 
 }
 
 onMounted(() => {
 
-    const randomIndex = getRandomRoom();
-    pickup.value = rooms.value[randomIndex];
+    if (rooms.value.length) {
+
+        const randomIndex = getRandomRoom();
+        pickup.value = rooms.value[randomIndex];
+
+    }
 
 });
 
