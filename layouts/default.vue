@@ -12,15 +12,13 @@ const { checkAuth } = authStore;
 const { userId, username } = storeToRefs(userStore);
 const { getUserData } = userStore;
 
-if (import.meta.server) {
-    
-    await checkAuth();
+if (import.meta.server) { await checkAuth(); }
 
-    // 若是已經登入，則在 server 端 "只" 取得用戶的 id ( 用來渲染 NuxtLink ) 和用戶名稱
+onMounted(async () => {
 
-    if (isLoggedIn.value) { await getUserData(); }
+    if (isLoggedIn.value && !userId.value) { await getUserData(); }
 
-}
+});
 
 </script>
 

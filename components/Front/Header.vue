@@ -112,7 +112,7 @@ const bgColor = computed(() => {
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <NuxtLink
-                                        :to="{ name: 'user-userId-profile', params: { userId } }"
+                                        :to="`/user/${userId}/profile`"
                                         class="dropdown-item px-6 py-4">
                                     我的帳戶
                                     </NuxtLink>
@@ -145,7 +145,7 @@ const bgColor = computed(() => {
                     <li class="nav-item d-md-none" v-if="isLoggedIn">
                         <ClientOnly>
                         <NuxtLink
-                            :to="{ name: 'user-userId-profile', params: { userId } }"
+                            :to="`/user/${userId}/profile`"
                             class="nav-link p-4 text-neutral-100">
                         會員中心
                         </NuxtLink>

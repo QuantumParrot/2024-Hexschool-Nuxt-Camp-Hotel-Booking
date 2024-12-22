@@ -11,7 +11,7 @@ import useUserStore from '@/stores/user';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
-    // const { isHydrating, payload } = useNuxtApp();
+    const { isHydrating, payload } = useNuxtApp();
 
     const authStore = useAuthStore();
     const userStore = useUserStore();
@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const { userId } = storeToRefs(userStore);
     const { isLoggedIn } = storeToRefs(authStore);
 
-    if (import.meta.client && isLoggedIn.value) return;
+    if (import.meta.client && isHydrating && payload.serverRendered && isLoggedIn.value) return;
 
     /***/
 
@@ -36,22 +36,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if (status) {
 
         /* 身份驗證成功 */
-
-        if (currentDir !== 'user') {
-            
-            await userStore.getUserData();
-
-            // 因為 /user/* 頁面同時包含了 default 的 layout
-
-            // 為了根據會員資訊渲染對應的 Header
-
-            // 本身就會執行一次 checkAuth --> getUserData 的流程
-            
-            // 所以不需要再執行ㄧ次
-
-            // 這部分之後再優化處理
-        
-        }
 
         if (currentDir === 'account') {
 

@@ -4,11 +4,7 @@ export default defineStore('user', () => {
 
     const { showToastAlert } = useAlert();
 
-    // get them in client-side
-
     const userData = ref({ address: {} });
-
-    // get them in server-side
 
     const username = ref('');
     const userId = ref('');
@@ -33,18 +29,12 @@ export default defineStore('user', () => {
 
                 onResponse({ response }) {
 
-                    // console.log(import.meta.server ? 'server' : 'client');
-
                     const { result } = response._data;
-
-                    if (import.meta.server) {
-
-                        username.value = result.name;
-                        userId.value = result._id;
-
-                    }
-
-                    if (import.meta.client) { userData.value = result; }
+                        
+                    userData.value = result;
+                    
+                    userId.value = result._id;
+                    username.value = result.name;
 
                 }
     

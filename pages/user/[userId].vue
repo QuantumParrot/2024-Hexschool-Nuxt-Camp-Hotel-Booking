@@ -1,23 +1,23 @@
 <script setup>
 
-definePageMeta({ middleware: 'auth' });
+definePageMeta({ middleware: ['auth'] })
 
-//
+// pinia
 
 import useAuthStore from '@/stores/auth';
 import useUserStore from '@/stores/user';
+
+const authStore = useAuthStore();
+const userStore = useUserStore();
+
+const { logout } = authStore;
+const { userData } = storeToRefs(userStore);
 
 // composables
 
 const router = useRouter();
 
 const route = useRoute();
-
-// pinia
-
-const { userId, username } = storeToRefs(useUserStore());
-
-const { logout } = useAuthStore();
 
 //
 
@@ -33,6 +33,16 @@ onMounted(() => {
         });
     
     };
+
+});
+
+onMounted(async () => {
+
+    if (!userData.value._id) {
+
+        await userStore.getUserData();
+
+    }
 
 });
 
@@ -59,7 +69,7 @@ onMounted(() => {
                 <img class="avatar" src="/images/avatar-6.png" alt="avatar">
                 <div class="w-100 d-flex justify-content-between gap-4">
                     <ClientOnly>
-                        <h2 class="h1 text-neutral-100 fw-bold mb-0">Hello，{{ username || '訪客' }}</h2>
+                        <h2 class="h1 text-neutral-100 fw-bold mb-0">Hello，{{ userData.name || '訪客' }}</h2>
                     </ClientOnly>
                     <button
                         class="d-md-none align-self-stretch btn btn-primary-600
@@ -77,7 +87,7 @@ onMounted(() => {
                 <li class="nav-item">
                     <ClientOnly>
                     <NuxtLink
-                        :to="`/user/${userId}/profile`"
+                        :to="`/user/${route.params.userId}/profile`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         個人資料
@@ -87,7 +97,7 @@ onMounted(() => {
                 <li class="nav-item">
                     <ClientOnly>
                     <NuxtLink
-                        :to="`/user/${userId}/order`"
+                        :to="`/user/${route.params.userId}/order`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         我的訂單
