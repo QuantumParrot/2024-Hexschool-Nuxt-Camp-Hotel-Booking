@@ -7,7 +7,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {    
     public: {
-      apiUrl: 'https://two024-hexschool-nuxt-camp-freyja-server.onrender.com'
+      apiUrl: ''
     }
   },
 
