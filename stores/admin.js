@@ -11,14 +11,22 @@ export default defineStore('admin', () => {
 
     };
 
-    const roomDataRaw = ref([]);
+    const handleResponseError = ({ response }) => {
 
-    const newsDataRaw = ref([]);
+        // console.log(response);
 
-    const culinaryDataRaw = ref([]);
+        if (import.meta.env.DEV) {
 
-    const orderDataRaw = ref([]);
+            const { message } = response._data;
 
-    return { apiConfig, roomDataRaw, newsDataRaw, culinaryDataRaw, orderDataRaw }
+            if (message) { console.error(message); }
+
+            console.error(response);
+        
+        }
+
+    };
+
+    return { apiConfig, handleResponseError }
 
 });

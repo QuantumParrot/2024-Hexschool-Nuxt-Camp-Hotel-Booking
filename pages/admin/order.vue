@@ -8,14 +8,12 @@ import useBookingStore from '@/stores/booking';
 const adminStore = useAdminStore();
 const bookingStore = useBookingStore();
 
-const { orderDataRaw } = storeToRefs(adminStore);
-const { apiConfig } = adminStore;
-
+const { apiConfig, handleResponseError } = adminStore;
 const { discountPrice } = bookingStore;
 
 //
 
-const { $toThousands, $dateformat } = useNuxtApp();
+const { $toThousands, $dateformat, payload } = useNuxtApp();
 
 const { getDays } = useCalculator();
 const { showToastAlert, showConfirmAlert } = useAlert();
@@ -27,27 +25,7 @@ const { data:orders, execute } = await useAsyncData('get-orders', () => {
     return $fetch('/api/v1/admin/orders', {
         
         ...apiConfig,
-
-        onResponse: ({ response }) => {
-
-            // console.log(response);
-
-            if (response.ok) {
-
-                adminStore.$patch({ orderDataRaw: response._data.result })
-
-            } else {
-
-                if (import.meta.env.DEV && message) {
-                    
-                    console.error(response._data.message);
-                    console.error(response);
-                
-                }
-
-            }
-
-        },
+        onResponseError: handleResponseError,
     
     });
 
@@ -75,7 +53,16 @@ const { data:orders, execute } = await useAsyncData('get-orders', () => {
 
 onMounted(() => {
 
-    if (!orderDataRaw.value.length) { execute(); }
+    // console.log(payload.data);
+
+    if (payload.data['get-orders']) {
+        
+        orders.value = payload.data['get-orders'];
+        return;
+
+    }
+
+    execute();
 
 });
 
@@ -93,7 +80,7 @@ const filter = ref('isConfirmed');
 
 const filteredOrders = computed(() => {
 
-    if (!orders.value) return;
+    if (!orders.value) return [];
 
     return filters[filter.value](orders.value);
 
@@ -147,7 +134,7 @@ const cancelOrder = async (id) => {
 
 };
 
-const handleDeleteProcess = () => {
+const handleCancelProcess = () => {
 
     if (orderTemp.value.status === -1) return;
 
@@ -310,7 +297,7 @@ const handleDeleteProcess = () => {
             <div class="modal-footer" v-show="orderTemp.status !== -1">
                 <button
                     type="button" class="btn px-6 btn-outline-neutral-600"
-                    @click="handleDeleteProcess"
+                    @click="handleCancelProcess"
                     :disabled="isPending || orderTemp.status === -1">
                     取消這筆訂單
                 </button>
