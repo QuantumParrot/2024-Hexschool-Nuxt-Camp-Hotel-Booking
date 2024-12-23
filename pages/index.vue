@@ -2,6 +2,8 @@
 
 import { Icon } from '@iconify/vue';
 
+const { payload } = useNuxtApp();
+
 //
 
 const isHeroLoading = ref(true);
@@ -29,7 +31,7 @@ const handleAsyncError = (error) => {
 
 }
 
-const { data } = await useAsyncData("hotelInfo", async () => {
+const { data, refresh } = await useAsyncData("hotelInfo", async () => {
 
     return await Promise.allSettled([
 
@@ -60,13 +62,19 @@ const { data } = await useAsyncData("hotelInfo", async () => {
 
         // console.log('response-array', resArr);
 
-        return resArr.map(res => res.status === 'fulfilled' ? res.value.result : [])
+        return resArr.map(res => res.value.status ? res.value.result : [])
 
-    }
+    },
 
 });
 
 const [ news, culinary, rooms ] = toRefs(data.value);
+
+onMounted(() => {
+
+    if (!payload.serverRendered['hotelInfo']) { refresh(); }
+
+});
 
 // 在首頁隨機顯示其中一種房型
 
@@ -80,7 +88,7 @@ const getRandomRoom = () => {
 
 onMounted(() => {
 
-    if (rooms.value.length) {
+    if (Array.isArray(rooms.value) && rooms.value.length) {
 
         const randomIndex = getRandomRoom();
         pickup.value = rooms.value[randomIndex];
