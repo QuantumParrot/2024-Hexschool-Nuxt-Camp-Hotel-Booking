@@ -35,6 +35,8 @@ setLocale('zhTW');
 
 const router = useRouter();
 
+const route = useRoute();
+
 const { translateMessage } = useValidation();
 
 // pinia store
@@ -44,12 +46,6 @@ const { sendLoginAuth } = useAuthStore();
 //
 
 const loginFormData = ref({ email: '', password: '' });
-
-const isFormFinished = computed(() => {
-
-    return loginFormData.value.email && loginFormData.value.password;
-
-});
 
 const rememberUser = ref(false);
 
@@ -63,8 +59,8 @@ const handleLoginProcess = (loginData, { resetForm }) => {
         .then((id) => {
 
             setTimeout(() => {
-                
-                router.replace(`/user/${id}/profile`);
+
+                router.replace(route.query.redirect ? `${route.query.redirect}` : `/user/${id}/profile`);
             
             }, 1500);
 
@@ -95,7 +91,7 @@ const handleLoginProcess = (loginData, { resetForm }) => {
         <h1 class="text-neutral-100 fw-bold">立即開始旅程</h1>
     </div>
     <div class="fs-8 fs-md-7 mb-4">
-        <Form v-slot="{ errors }" @submit="handleLoginProcess">
+        <Form v-slot="{ errors, meta }" @submit="handleLoginProcess">
             <div class="mb-4">
                 <label
                     for="email"
@@ -155,7 +151,7 @@ const handleLoginProcess = (loginData, { resetForm }) => {
             <button
                 class="btn btn-primary-600 w-100 py-4
                 text-neutral-100 fw-bold"
-                type="submit" :disabled="!isFormFinished || isPending">
+                type="submit" :disabled="!meta.valid || isPending">
                 會員登入
             </button>
         </Form>

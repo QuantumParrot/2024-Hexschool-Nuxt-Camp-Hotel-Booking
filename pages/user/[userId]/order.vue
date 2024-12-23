@@ -6,6 +6,8 @@ useSeoMeta({ title: '訂單列表' });
 
 import { Icon } from '@iconify/vue';
 
+//
+
 import useBookingStore from '@/stores/booking';
 
 const bookingStore = useBookingStore();
@@ -13,9 +15,13 @@ const bookingStore = useBookingStore();
 const { getOrders, cancelOrder } = bookingStore;
 const { orderRecords, discountPrice } = storeToRefs(bookingStore);
 
+//
+
 const { $dateformat, $toThousands } = useNuxtApp();
 
 const { getDays } = useCalculator();
+
+//
 
 const orders = computed(() => {
 
@@ -111,12 +117,12 @@ const handleCancelProcess = () => {
                 <div class="text-neutral-500 fs-8 fs-md-7 fw-bold">
                     <p class="title-deco primary mb-2">
                     入住：
-                    {{ $dateformat(latestOrder.checkInDate, 'YYYY 年 MM 月 DD 日') }} 15:00
+                    {{ $dateformat(latestOrder.checkInDate, 'YYYY 年 MM 月 DD 日 dddd') }} 15:00
                     可入住
                     </p>
                     <p class="title-deco neutral mb-2">
                     退房：
-                    {{ $dateformat(latestOrder.checkOutDate, 'YYYY 年 MM 月 DD 日') }} 12:00
+                    {{ $dateformat(latestOrder.checkOutDate, 'YYYY 年 MM 月 DD 日 dddd') }} 12:00
                     前退房
                     </p>
                 </div>
