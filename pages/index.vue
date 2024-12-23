@@ -68,7 +68,7 @@ const { data, refresh } = await useAsyncData("hotelInfo", async () => {
 
 });
 
-const [ news, culinary, rooms ] = toRefs(data.value);
+const [ news, culinary, rooms ] = toRefs(data.value || []);
 
 onMounted(() => {
 
