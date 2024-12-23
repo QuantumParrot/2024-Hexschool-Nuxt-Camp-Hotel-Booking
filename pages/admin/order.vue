@@ -108,8 +108,6 @@ const isPending = ref(false);
 
 const cancelOrder = async (id) => {
 
-    if (isPending.value) return;
-
     isPending.value = true;
 
     try {
@@ -136,13 +134,13 @@ const cancelOrder = async (id) => {
 
 const handleCancelProcess = () => {
 
-    if (orderTemp.value.status === -1) return;
+    if (isPending.value || orderTemp.value.status === -1) return;
 
     showConfirmAlert({
 
         icon: 'warning',
         iconColor: '#DA3E51',
-        title: '確定刪除這筆訂單？',
+        title: '確定取消這筆訂單？',
         showCancelButton: true,
         cancelButtonColor: '#DA3E51',
         confirmButtonText: '是', cancelButtonText: '否',
@@ -155,7 +153,7 @@ const handleCancelProcess = () => {
 
             if (res.status) {
 
-                showToastAlert({ icon: 'success', text: '刪除成功' });
+                showToastAlert({ icon: 'success', text: '取消成功' });
                 
                 refreshNuxtData('get-orders');
 
