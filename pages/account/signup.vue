@@ -38,7 +38,7 @@ setLocale('zhTW');
 
 const { address, cityList, countyList, addressToZipCode } = useAddress();
 
-const { translateMessage, phoneFormat } = useValidation();
+const { translateMessage, phoneFormat, passwordFormat } = useValidation();
 
 // pinia store
 
@@ -208,7 +208,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         placeholder="請輸入密碼"
                         v-model.trim="signUpFormData.password"
                         :class="{ 'is-invalid': errors['password'] }"
-                        :rules="{ required: true, min: 8 }" />
+                        :rules="passwordFormat" />
                     <ErrorMessage
                         name="password"
                         v-slot="{ message }">
