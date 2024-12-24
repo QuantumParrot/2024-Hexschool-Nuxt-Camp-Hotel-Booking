@@ -95,6 +95,12 @@ export default defineStore('user', () => {
 
     };
 
-    return { userData, userId, username, getUserData, updateUserData }
+    const resetUserData = () => {
+
+        userData.value = { address: {} }
+
+    }
+
+    return { userData, userId, username, getUserData, updateUserData, resetUserData }
 
 });

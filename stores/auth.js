@@ -1,4 +1,10 @@
+import useUserStore from '@/stores/user';
+
 export default defineStore("auth", () => {
+
+    const userStore = useUserStore();
+    
+    const { resetUserData } = userStore;
 
     // composables
 
@@ -102,8 +108,6 @@ export default defineStore("auth", () => {
 
             showToastAlert({ icon: 'success', text: '登入成功' });
 
-            isLoggedIn.value = true;
-
             return res.result._id;
 
         } catch (error) {
@@ -134,6 +138,8 @@ export default defineStore("auth", () => {
         token.value = null;
 
         isLoggedIn.value = false;
+
+        resetUserData();
 
         showToastAlert({ icon: 'success', text: '登出成功，期待您的再訪！' });
         navigateTo('/', { replace: true });
