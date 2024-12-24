@@ -137,8 +137,16 @@ const handleUpdateDataProcess = (formData) => {
 
     updateUserData(newData)
         .then((res) => {
-            
-            if (res.status) { window.location.reload(); }
+
+            if (res.status) {
+
+                setTimeout(() => {
+
+                    window.location.reload();
+
+                }, 1500);
+
+            }
         
         })
         .catch((error) => {
@@ -185,7 +193,15 @@ const handleUpdatePassword = (formData) => {
     updateUserData(data)
         .then((res) => {
             
-            if (res.status) { window.location.reload(); }
+            if (res.status) {
+                
+                setTimeout(() => {
+
+                    window.location.reload();
+
+                }, 1500);
+                
+            }
         
         })
         .catch((error) => {
@@ -338,7 +354,8 @@ const handleUpdatePassword = (formData) => {
                                     'pe-none p-0 border-0': !isEditUserProfile
                                 }"
                                 v-model.trim="userDataTemp.name"
-                                rules="required" />
+                                rules="required"
+                                :readonly="!isEditUserProfile" />
                             <ErrorMessage name="name" v-slot="{ message }">
                                 <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'name') }}</p>
                             </ErrorMessage>
@@ -356,7 +373,8 @@ const handleUpdatePassword = (formData) => {
                                     'pe-none p-0 border-0': !isEditUserProfile
                                 }"
                                 v-model.trim="userDataTemp.phone"
-                                :rules="phoneFormat" />
+                                :rules="phoneFormat"
+                                :readonly="!isEditUserProfile" />
                             <ErrorMessage name="phone" v-slot="{ message }">
                                 <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'phone') }}</p>
                             </ErrorMessage>
