@@ -72,7 +72,7 @@ const [ news, culinary, rooms ] = toRefs(data.value || []);
 
 onMounted(() => {
 
-    if (!payload.serverRendered['hotelInfo']) { refresh(); }
+    if (!payload.data['hotelInfo']) { refresh(); }
 
 });
 
