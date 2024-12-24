@@ -262,7 +262,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         placeholder="請輸入姓名"
                         v-model.trim="signUpFormData.name"
                         :class="{ 'is-invalid': errors['name'] }"
-                        :rules="{ required: true }" />
+                        :rules="{ required: true, min: 2 }" />
                     <ErrorMessage
                         name="name"
                         v-slot="{ message }">

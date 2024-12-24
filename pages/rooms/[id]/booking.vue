@@ -10,12 +10,13 @@ import { Field, Form, ErrorMessage, defineRule, configure } from "vee-validate";
 
 import { setLocale, localize } from '@vee-validate/i18n';
 
-import { required, email } from '@vee-validate/rules';
+import { required, email, min } from '@vee-validate/rules';
 
 import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
 
 defineRule('required', required);
 defineRule('email', email);
+defineRule('min', min);
 
 configure({
     
@@ -248,7 +249,7 @@ const confirmBooking = () => {
                                     :class="{ 'is-invalid': errors['name'] }"
                                     placeholder="請輸入您的姓名"
                                     v-model.trim="userInfo.name"
-                                    rules="required"
+                                    rules="required|min:2"
                                 />
                                 <ErrorMessage name="name" v-slot="{ message }">
                                     <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'name') }}</p>
