@@ -1,6 +1,6 @@
 export const useValidation = () => {
 
-    const transText = reactive({
+    const transText = {
 
         name: '姓名',
         password: '密碼',
@@ -8,7 +8,7 @@ export const useValidation = () => {
         address: '地址',
         email: '信箱',
 
-    });
+    };
 
     const translateMessage = (msg, type) => msg.replace(`${type} `, transText[type]);
 
