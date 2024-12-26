@@ -8,7 +8,7 @@ import useBookingStore from '@/stores/booking';
 const adminStore = useAdminStore();
 const bookingStore = useBookingStore();
 
-const { apiConfig, handleResponseError } = adminStore;
+const { apiConfig } = adminStore;
 const { discountPrice } = bookingStore;
 
 //
@@ -18,14 +18,15 @@ const { $toThousands, $dateformat, payload } = useNuxtApp();
 const { getDays } = useCalculator();
 const { showToastAlert, showConfirmAlert } = useAlert();
 
+const { handleAsyncError } = useErrorHandler();
+
 //
 
 const { data:orders, execute } = await useAsyncData('get-orders', () => {
 
     return $fetch('/api/v1/admin/orders', {
         
-        ...apiConfig,
-        onResponseError: handleResponseError,
+        ...apiConfig, onResponseError: handleAsyncError,
     
     });
 
@@ -108,27 +109,21 @@ const isPending = ref(false);
 
 const cancelOrder = async (id) => {
 
+    if (isPending.value) return;
+
     isPending.value = true;
 
     try {
 
         return await $fetch(`/api/v1/admin/orders/${id}`, {
 
-            ...apiConfig, method: 'DELETE',
+            ...apiConfig,
+            method: 'DELETE',
+            onResponseError: handleAsyncError,
 
         });
         
-    } catch (error) {
-
-        if (import.meta.env.DEV) { console.error(error); }
-
-        return error.data;
-        
-    } finally {
-
-        isPending.value = false;
-
-    }
+    } finally { isPending.value = false; }
 
 };
 
@@ -154,12 +149,8 @@ const handleCancelProcess = () => {
             if (res.status) {
 
                 showToastAlert({ icon: 'success', text: '取消成功' });
-                
+   
                 refreshNuxtData('get-orders');
-
-            } else {
-
-                showToastAlert({ icon: 'warning', text: res.message });
 
             }
 

@@ -19,6 +19,8 @@ const { orderRecords, discountPrice } = storeToRefs(bookingStore);
 
 const { $dateformat, $toThousands } = useNuxtApp();
 
+const { showToastAlert, showConfirmAlert } = useAlert();
+
 const { getDays } = useCalculator();
 
 //
@@ -51,8 +53,6 @@ onMounted(async() => {
 
 //
 
-const { showConfirmAlert } = useAlert();
-
 const handleCancelProcess = () => {
 
     showConfirmAlert({
@@ -71,13 +71,19 @@ const handleCancelProcess = () => {
     }).then(async (result) => {
 
         if (result.isConfirmed) {
-            
-            const { status } = await cancelOrder(latestOrder.value._id);
 
-            if (status) {
+            const res = await cancelOrder(latestOrder.value._id);
 
-                window.location.reload();
+            if (res.status) {
 
+                showToastAlert({ 'icon': 'success', text: '預訂已取消' });
+
+                setTimeout(() => {
+
+                    window.location.reload();
+
+                }, 1500);
+                
             }
         
         }

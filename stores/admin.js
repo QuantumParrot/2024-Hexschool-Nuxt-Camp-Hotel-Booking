@@ -11,22 +11,6 @@ export default defineStore('admin', () => {
 
     };
 
-    const handleResponseError = ({ response }) => {
-
-        // console.log(response);
-
-        if (import.meta.env.DEV) {
-
-            const { message } = response._data;
-
-            if (message) { console.error(message); }
-
-            console.error(response);
-        
-        }
-
-    };
-
-    return { apiConfig, handleResponseError }
+    return { apiConfig }
 
 });

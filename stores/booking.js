@@ -1,7 +1,10 @@
 export default defineStore('booking', () => {
 
     const config = useRuntimeConfig();
-    const { showToastAlert } = useAlert();
+
+    const { handleAsyncError } = useErrorHandler();
+
+    //
 
     const discountPrice = ref(1000);
 
@@ -19,32 +22,16 @@ export default defineStore('booking', () => {
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 
-        try {
+        return await $fetch(`/api/v1/orders`, {
 
-            return await $fetch(`/api/v1/orders`, {
+            baseURL: config.public.apiUrl,
+            method: 'POST',
+            headers: { Authorization: token.value },
+            body,
 
-                baseURL: config.public.apiUrl,
-                method: 'POST',
-                headers: { Authorization: token.value },
-                body
+            onResponseError: handleAsyncError,
 
-            });
-            
-        } catch (error) {
-
-            const { message } = error.data;
-
-            if (message) {
-
-                showToastAlert({ icon: 'warning', text: message });
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' });
-
-            }
-            
-        }
+        });
 
     };
 
@@ -52,31 +39,15 @@ export default defineStore('booking', () => {
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 
-        try {
+        return await $fetch(`/api/v1/orders/${id}`, {
 
-            return await $fetch(`/api/v1/orders/${id}`, {
+            baseURL: config.public.apiUrl,
+            method: 'GET',
+            headers: { Authorization: token.value },
 
-                baseURL: config.public.apiUrl,
-                method: 'GET',
-                headers: { Authorization: token.value }
+            onResponseError: handleAsyncError,
 
-            });
-
-        } catch (error) {
-
-            const { message } = error.data;
-
-            if (message) {
-
-                showToastAlert({ icon: 'warning', text: message });
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' });
-
-            }
-
-        }
+        });
 
     };
 
@@ -84,35 +55,17 @@ export default defineStore('booking', () => {
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 
-        try {
+        const res = await $fetch('/api/v1/orders', {
 
-            const res = await $fetch('/api/v1/orders', {
+            baseURL: config.public.apiUrl,
+            method: 'GET',
+            headers: { Authorization: token.value },
 
-                baseURL: config.public.apiUrl,
-                method: 'GET',
-                headers: { Authorization: token.value }
+            onResponseError: handleAsyncError,
 
-            });
+        });
 
-            return res.result.filter(order => order.status !== -1).reverse();
-            
-        } catch (error) {
-
-            // console.log(error);
-
-            const { message } = error.data;
-
-            if (message) {
-
-                showToastAlert({ icon: 'warning', text: message });
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' });
-
-            }
-            
-        }
+        return res.result.filter(order => order.status !== -1).reverse();
 
     };
 
@@ -120,37 +73,15 @@ export default defineStore('booking', () => {
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 
-        try {
+        return await $fetch(`/api/v1/orders/${id}`, {
 
-            const res = await $fetch(`/api/v1/orders/${id}`, {
+            baseURL: config.public.apiUrl,
+            method: 'DELETE',
+            headers: { Authorization: token.value },
 
-                baseURL: config.public.apiUrl,
-                method: 'DELETE',
-                headers: { Authorization: token.value }
+            onResponseError: handleAsyncError,
 
-            });
-
-            showToastAlert({ 'icon': 'success', text: '預訂已取消' });
-
-            return res;
-            
-        } catch (error) {
-
-            const { message } = error.data;
-
-            if (message) {
-
-                showToastAlert({ icon: 'warning', text: message });
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' });
-
-            }
-
-            return error.data;
-           
-        }
+        });
 
     };
 

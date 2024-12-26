@@ -2,36 +2,15 @@
 
 import { Icon } from '@iconify/vue';
 
-const { payload } = useNuxtApp();
-
-//
-
-const isHeroLoading = ref(true);
-
 //
 
 const config = useRuntimeConfig();
 
-const handleAsyncError = (error) => {
+const { handleAsyncError } = useErrorHandler();
 
-    // 給開發者看的錯誤訊息
+//
 
-    if (!import.meta.env.DEV) return;
-
-    if (error.response._data) {
-
-        console.error(error.response._data.message);
-        console.error(error.response);
-
-    } else {
-      
-        console.error(error);
-    
-    }
-
-}
-
-const { data, refresh } = await useAsyncData("hotelInfo", async () => {
+const { data: rawData, refresh } = await useAsyncData("hotelInfo", async () => {
 
     return await Promise.allSettled([
 
@@ -60,21 +39,27 @@ const { data, refresh } = await useAsyncData("hotelInfo", async () => {
 
     transform: (resArr) => {
 
-        // console.log('response-array', resArr);
-
-        return resArr.map(res => res.value.status ? res.value.result : [])
+        return resArr.map(res => res.status === 'fulfilled' ? res.value.result : [])
 
     },
 
 });
 
-const [ news, culinary, rooms ] = toRefs(data.value || []);
+const data = ref(rawData.value || []);
+
+const [ news, culinary, rooms ] = toRefs(data.value);
 
 onMounted(() => {
+
+    const { payload } = useNuxtApp();
 
     if (!payload.data['hotelInfo']) { refresh(); }
 
 });
+
+//
+
+const isHeroLoading = ref(true);
 
 // 在首頁隨機顯示其中一種房型
 
@@ -88,7 +73,7 @@ const getRandomRoom = () => {
 
 onMounted(() => {
 
-    if (Array.isArray(rooms.value) && rooms.value.length) {
+    if (rooms && rooms.value.length) {
 
         const randomIndex = getRandomRoom();
         pickup.value = rooms.value[randomIndex];

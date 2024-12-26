@@ -17,6 +17,8 @@ const { isLoggedIn } = storeToRefs(authStore);
 
 const { $dateformat, $toThousands } = useNuxtApp();
 
+const { handleAsyncError } = useErrorHandler();
+
 const { showToastAlert } = useAlert();
 
 const config = useRuntimeConfig();
@@ -36,6 +38,7 @@ const { data:room } = await useAsyncData(async() => {
     const res = await $fetch(`api/v1/rooms/${id.value}`, {
 
         baseURL: config.public.apiUrl,
+        onResponseError: handleAsyncError,
 
     });
 
@@ -387,7 +390,7 @@ useSeoMeta({ title });
                         <NuxtLink
                             class="btn btn-primary-600 py-4 rounded-3
                             text-neutral-100 fw-bold"
-                            to="/account/login">
+                            :to="{ name: 'account-login', query: { redirect: route.path } }">
                             請先登入
                         </NuxtLink>
                     </template>
@@ -432,7 +435,7 @@ useSeoMeta({ title });
                 <NuxtLink
                     class="btn btn-primary-600 px-10 py-4 rounded-3
                     text-neutral-100 fw-bold"
-                    to="/account/login">
+                    :to="{ name: 'account-login', query: { redirect: route.path } }">
                     請先登入
                 </NuxtLink>
             </div>

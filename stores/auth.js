@@ -12,6 +12,8 @@ export default defineStore("auth", () => {
 
     const { showToastAlert } = useAlert();
 
+    const { handleAsyncError } = useErrorHandler();
+
     //
 
     const isLoggedIn = ref(false);
@@ -50,85 +52,38 @@ export default defineStore("auth", () => {
 
         // console.log(body);
 
-        try {
-
-            const res = await $fetch('/api/v1/user/signup', {
-                
-                baseURL: config.public.apiUrl,
-                method: 'POST',
-                body,
-
-            });
-
-            showToastAlert({ icon: 'success', text: '註冊成功！請登入' });
-
-            return res;
+        const res = await $fetch('/api/v1/user/signup', {
             
-        } catch (error) {
+            baseURL: config.public.apiUrl,
+            method: 'POST',
+            body,
+            onResponseError: handleAsyncError
 
-            const { message } = error.data
+        });
 
-            if (message) {
+        showToastAlert({ icon: 'success', text: '註冊成功！請登入' });
 
-                showToastAlert({ icon: 'warning', text: message });
-
-                // throw new Error(message);
-
-                return;
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' })
-
-                // console.error(error.data);
-
-                return;
-
-            }
-            
-        }
+        return res;
 
     };
 
     const sendLoginAuth = async (body) => {
 
-        try {
+        const res = await $fetch('api/v1/user/login', {
 
-            const res = await $fetch('api/v1/user/login', {
+            baseURL: config.public.apiUrl,
+            method: 'POST',
+            body,
+            onResponseError: handleAsyncError
 
-                baseURL: config.public.apiUrl,
-                method: 'POST',
-                body,
+        });
 
-            });
+        const token = useCookie('nuxt-camp-hotel-booking-auth');
+        token.value = res.token;
 
-            const token = useCookie('nuxt-camp-hotel-booking-auth');
+        showToastAlert({ icon: 'success', text: '登入成功' });
 
-            token.value = res.token;
-
-            showToastAlert({ icon: 'success', text: '登入成功' });
-
-            return res.result._id;
-
-        } catch (error) {
-
-            const { message } = error.data;
-
-            if (message) {
-
-                showToastAlert({ icon: 'warning', text: message });
-
-                throw new Error(message);
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍候再試' });
-
-                console.error(error.data);
-
-            }
-
-        }
+        return res.result._id;
 
     };
 

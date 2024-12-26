@@ -141,11 +141,6 @@ const confirmBooking = () => {
             };
 
         })
-        .catch((error) => {
-
-            if (import.meta.env.DEV) { console.log(error); }
-
-        })
         .finally(() => {
             
             isPending.value = true;

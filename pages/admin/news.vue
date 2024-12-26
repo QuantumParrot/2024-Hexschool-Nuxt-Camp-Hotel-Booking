@@ -28,7 +28,7 @@ import useAdminStore from '@/stores/admin';
 
 const adminStore = useAdminStore();
 
-const { apiConfig, handleResponseError } = adminStore;
+const { apiConfig } = adminStore;
 
 //
 
@@ -36,14 +36,15 @@ const { $dateformat, payload } = useNuxtApp();
 
 const { showToastAlert, showConfirmAlert } = useAlert();
 
+const { handleAsyncError } = useErrorHandler();
+
 //
 
 const { data:newsList, execute } = await useAsyncData('get-news', () => {
 
     return $fetch('/api/v1/admin/news', {
 
-        ...apiConfig,
-        onResponseError: handleResponseError,
+        ...apiConfig, onResponseError: handleAsyncError,
 
     });
 
@@ -121,35 +122,32 @@ const handleUpdateProcess = async (newsData, { resetForm }) => {
 
     }
 
-    try {
+    const res = await $fetch(api, {
 
-        const res = await $fetch(api, {
+        ...apiConfig,
+        method,
+        body: {
+            title: newsTemp.value.title,
+            description: newsTemp.value.description,
+            image: newsTemp.value.image,
+        },
+        onResponseError: handleAsyncError,
 
-            ...apiConfig,
-            method,
-            body: {
-                title: newsTemp.value.title,
-                description: newsTemp.value.description,
-                image: newsTemp.value.image,
-            },
-            onResponseError: handleResponseError,
+    });
 
-        });
+    if (res.status) {
 
-        if (res.status) {
-
-            showToastAlert({ icon: 'success', text: `${id ? '修改' : '新增'}成功！` });
+        showToastAlert({
             
-            refreshNuxtData('get-news');
-
-            resetForm();
-
-        }
+            icon: 'success',
+            text: `${id ? '修改' : '新增'}成功！`
         
-    } catch (error) {
-
-        showToastAlert({ icon: 'warning', text: '請確認是否連接網路' })
+        });
         
+        refreshNuxtData('get-news');
+
+        resetForm();
+
     }
 
 };
@@ -162,25 +160,15 @@ const deleteNews = async (id) => {
 
     try {
 
-        const res = await $fetch(`/api/v1/admin/news/${id}`, {
+        return await $fetch(`/api/v1/admin/news/${id}`, {
 
             ...apiConfig,
             method: 'DELETE',
-            onResponseError: handleResponseError,
+            onResponseError: handleAsyncError,
 
         });
-
-        // console.log(res);
-
-        return res;
         
-    } catch (error) {
-
-        if (import.meta.env.DEV) { console.error(error); }
-
-        return error.data;
-        
-    } finally { isPending.value = false }
+    } finally { isPending.value = false; }
 
 };
 
@@ -208,10 +196,6 @@ const handleDeleteProcess = (id) => {
                 showToastAlert({ icon: 'success', text: '刪除成功！' });
 
                 refreshNuxtData('get-news');
-
-            } else {
-
-                showToastAlert({ icon: 'warning', text: res.message });
 
             }
 

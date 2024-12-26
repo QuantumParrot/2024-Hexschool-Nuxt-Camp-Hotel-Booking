@@ -2,7 +2,9 @@ export default defineStore('user', () => {
 
     const config = useRuntimeConfig();
 
-    const { showToastAlert } = useAlert();
+    const { handleAsyncError } = useErrorHandler();
+
+    //
 
     const userData = ref({ address: {} });
 
@@ -11,48 +13,38 @@ export default defineStore('user', () => {
 
     const getUserData = async () => {
 
+        const token = useCookie('nuxt-camp-hotel-booking-auth');
+
         /***/
 
         if (import.meta.env.DEV) { console.trace('pinia store: get user data'); }
 
         /***/
 
-        const token = useCookie('nuxt-camp-hotel-booking-auth');
+        return await $fetch('/api/v1/user', {
 
-        try {
+            baseURL: config.public.apiUrl,
+            method: 'GET',
+            headers: { Authorization: token.value },
 
-            await $fetch('/api/v1/user', {
+            onResponse({ response }) {
 
-                baseURL: config.public.apiUrl,
-                method: 'GET',
-                headers: { Authorization: token.value },
-
-                onResponse({ response }) {
+                if (response.ok) {
 
                     const { result } = response._data;
-                        
+                    
                     userData.value = result;
                     
                     userId.value = result._id;
                     username.value = result.name;
 
                 }
-    
-            });
-            
-        } catch (error) {
 
-            const { message } = error.data;
+            },
 
-            if (message) {
+            onResponseError: handleAsyncError
 
-                throw new Error(error.data.message);
-
-            }
-
-            console.error(error.data);
-            
-        }
+        });
 
     };
 
@@ -60,38 +52,16 @@ export default defineStore('user', () => {
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
 
-        try {
+        return await $fetch('/api/v1/user', {
 
-            const res = await $fetch('/api/v1/user', {
+            baseURL: config.public.apiUrl,
+            method: 'PUT',
+            headers: { Authorization: token.value },
+            body,
 
-                baseURL: config.public.apiUrl,
-                method: 'PUT',
-                headers: { Authorization: token.value },
-                body,
+            onResponseError: handleAsyncError
 
-            });
-
-            showToastAlert({ icon: 'success', text: '更新成功！' });
-
-            return res;
-            
-        } catch (error) {
-
-            const { message } = error.data;
-
-            if (message) {
-
-                showToastAlert({ icon: 'warning', text: message });
-
-            } else {
-
-                showToastAlert({ icon: 'error', text: '出現錯誤，請稍後再試' });
-
-            }
-
-            return error.data;
-            
-        }
+        });
 
     };
 

@@ -12,6 +12,8 @@ const config = useRuntimeConfig();
 
 const { $toThousands } = useNuxtApp();
 
+const { handleAsyncError } = useErrorHandler();
+
 //
 
 const { data } = await useAsyncData(() => {
@@ -19,6 +21,7 @@ const { data } = await useAsyncData(() => {
     return $fetch('api/v1/rooms', {
 
         baseURL: config.public.apiUrl,
+        onResponseError: handleAsyncError,
 
     });
 

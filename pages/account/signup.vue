@@ -36,9 +36,19 @@ setLocale('zhTW');
 
 // composables
 
-const { address, cityList, countyList, addressToZipCode } = useAddress();
+const {
+    
+    address, cityList, countyList,
+    addressToZipCode
 
-const { translateMessage, phoneFormat, passwordFormat } = useValidation();
+} = useAddress();
+
+const {
+    
+    translateMessage,
+    phoneFormat, passwordFormat
+
+} = useValidation();
 
 // pinia store
 
@@ -98,29 +108,26 @@ const isPending = ref(false);
 
 const handleSignUpProcess = (signupData, { resetForm }) => {
 
-    // if (!isFormFinished.value) return;
+    if (isPending.value) return;
+
+    isPending.value = true;
+
+    //
 
     const data = { ...signUpFormData.value, birthday: birthday.value };
     
     data.address.zipcode = addressToZipCode(address.value);
 
-    // console.log(data);
-
-    isPending.value = true;
-
     sendSignUpAuth(data)
         .then((res) => {
 
-            // console.log(res);
-
             resetForm();
             
-            setTimeout(() => navigateTo({ name: 'account-login' }), 1500);
-
-        })
-        .catch((error) => {
-
-            if (import.meta.env.DEV) { console.log(error); }
+            setTimeout(() => {
+                
+                navigateTo({ name: 'account-login' })
+            
+            }, 1500);
 
         })
         .finally(() => { isPending.value = false });

@@ -53,6 +53,8 @@ const isPending = ref(false);
 
 const handleLoginProcess = (loginData, { resetForm }) => {
 
+    if (isPending.value) return;
+
     isPending.value = true;
 
     sendLoginAuth(loginData)
@@ -63,11 +65,6 @@ const handleLoginProcess = (loginData, { resetForm }) => {
                 router.replace(route.query.redirect ? `${route.query.redirect}` : `/user/${id}/profile`);
             
             }, 1500);
-
-        })
-        .catch((error) => {
-
-            if (import.meta.env.DEV) { console.log(error); }
 
         })
         .finally(() => {

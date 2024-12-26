@@ -36,6 +36,8 @@ const { userData } = storeToRefs(userStore);
 
 // composables
 
+const { showToastAlert } = useAlert();
+
 const { $dateformat } = useNuxtApp();
 
 const {
@@ -90,11 +92,7 @@ onMounted(async () => {
 
     // 如果已經取得資料，不需要再取得一次
 
-    if (!userData.value.name) {
-
-        await getUserData();
-
-    }
+    if (!userData.value.name) { await getUserData(); }
 
     initUserData();
 
@@ -140,6 +138,8 @@ const handleUpdateDataProcess = (formData) => {
 
             if (res.status) {
 
+                showToastAlert({ icon: 'success', text: '更新成功！' });
+
                 setTimeout(() => {
 
                     window.location.reload();
@@ -147,11 +147,6 @@ const handleUpdateDataProcess = (formData) => {
                 }, 1500);
 
             }
-        
-        })
-        .catch((error) => {
-        
-            if (import.meta.env.DEV) { console.log(error); }
         
         })
         .finally(() => { isPending.value = false; })
@@ -194,19 +189,16 @@ const handleUpdatePassword = (formData) => {
         .then((res) => {
             
             if (res.status) {
-                
+
+                showToastAlert({ icon: 'success', text: '更新成功！' });
+
                 setTimeout(() => {
 
                     window.location.reload();
 
                 }, 1500);
-                
+
             }
-        
-        })
-        .catch((error) => {
-        
-            if (import.meta.env.DEV) { console.log(error); }
         
         })
         .finally(() => { isPending.value = false; })
