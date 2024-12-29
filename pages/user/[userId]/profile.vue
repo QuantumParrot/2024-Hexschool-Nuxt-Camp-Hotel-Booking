@@ -4,28 +4,6 @@ useSeoMeta({ title: '個人資料' });
 
 //
 
-import { Field, Form, ErrorMessage, defineRule, configure } from "vee-validate";
-
-import { required, confirmed } from '@vee-validate/rules';
-
-import { setLocale, localize } from '@vee-validate/i18n';
-
-import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
-
-defineRule('confirmed', confirmed);
-defineRule('required', required);
-
-configure({
-    
-    validateOnInput: true,
-    generateMessage: localize({ zhTW })
-
-});
-
-setLocale('zhTW');
-
-//
-
 import useUserStore from '@/stores/user';
 
 const userStore = useUserStore();
@@ -49,7 +27,7 @@ const {
 
 const { minYear, date, days, setDate } = useDate();
 
-const { translateMessage, phoneFormat, passwordFormat } = useValidation();
+const { translateMessage } = useValidation();
 
 //
 
@@ -251,7 +229,7 @@ const handleUpdatePassword = (formData) => {
                             重設密碼
                         </button>
                     </div>
-                    <Form v-slot="{ errors, meta }" @submit="handleUpdatePassword" v-else>
+                    <VForm v-slot="{ errors, meta }" @submit="handleUpdatePassword" v-else>
                         <div class="d-flex flex-column gap-4 gap-md-6">
                             <div>
                                 <label
@@ -259,13 +237,13 @@ const handleUpdatePassword = (formData) => {
                                     class="form-label fs-8 fs-md-7 fw-bold">
                                     舊密碼
                                 </label>
-                                <Field
+                                <VField
                                     type="password" id="old-password" name="old-password"
                                     class="form-control fs-7 p-4 rounded-3"
                                     :class="{ 'is-invalid': errors['old-password'] }"
                                     placeholder="請輸入舊密碼"
                                     v-model.trim="currentPassword"
-                                    :rules="passwordFormat" />
+                                    rules="passwordFormat" />
                                 <ErrorMessage name="old-password" class="invalid-feedback mt-3 mb-0" />
                             </div>
                             <div>
@@ -274,13 +252,13 @@ const handleUpdatePassword = (formData) => {
                                     class="form-label fs-8 fs-md-7 fw-bold">
                                     新密碼
                                 </label>
-                                <Field
+                                <VField
                                     type="password" id="new-password" name="new-password"
                                     class="form-control fs-7 p-4 rounded-3"
                                     :class="{ 'is-invalid': errors['new-password'] }"
                                     placeholder="請輸入新密碼"
                                     v-model.trim="newPassword"
-                                    :rules="passwordFormat" />
+                                    rules="passwordFormat" />
                                 <ErrorMessage name="new-password" class="invalid-feedback mt-3 mb-0" />
                             </div>
                             <div>
@@ -289,7 +267,7 @@ const handleUpdatePassword = (formData) => {
                                     class="form-label fs-8 fs-md-7 fw-bold">
                                     確認新密碼
                                 </label>
-                                <Field
+                                <VField
                                     type="password" id="confirm-password" name="confirm-password" 
                                     class="form-control fs-7 p-4 rounded-3"
                                     :class="{ 'is-invalid': errors['confirm-password'] }"
@@ -319,13 +297,13 @@ const handleUpdatePassword = (formData) => {
                                 </button>
                             </div>
                         </div>
-                    </Form>
+                    </VForm>
                 </div>
             </section>
         </div>
         <div class="col-md-7">
             <ClientOnly>
-            <Form v-slot="{ errors, meta }" @submit="handleUpdateDataProcess">
+            <VForm v-slot="{ errors, meta }" @submit="handleUpdateDataProcess">
                 <section
                     class="bg-neutral-100 p-6 p-md-10 rounded-3xl
                     d-flex flex-column gap-6 gap-md-10">
@@ -337,7 +315,7 @@ const handleUpdatePassword = (formData) => {
                             <label for="name" class="form-label">
                             姓名
                             </label>
-                            <Field
+                            <VField
                                 id="name" name="name" type="text"
                                 class="form-control text-neutral-600 fw-bold"
                                 :class="{
@@ -356,7 +334,7 @@ const handleUpdatePassword = (formData) => {
                             <label for="phone" class="form-label">
                             手機號碼
                             </label>
-                            <Field
+                            <VField
                                 id="phone" name="phone" type="tel"
                                 class="form-control text-neutral-600 fw-bold"
                                 :class="{
@@ -365,7 +343,7 @@ const handleUpdatePassword = (formData) => {
                                     'pe-none p-0 border-0': !isEditUserProfile
                                 }"
                                 v-model.trim="userDataTemp.phone"
-                                :rules="phoneFormat"
+                                rules="phoneFormat"
                                 :readonly="!isEditUserProfile" />
                             <ErrorMessage name="phone" v-slot="{ message }">
                                 <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'phone') }}</p>
@@ -445,7 +423,7 @@ const handleUpdatePassword = (formData) => {
                                         <option :value="county">{{ county }}</option>
                                     </template>
                                 </select>
-                                <Field
+                                <VField
                                     id="address" name="address" type="text"
                                     class="form-control p-4 rounded-3" :class="{ 'is-invalid': errors['address'] }"
                                     placeholder="請輸入詳細地址"
@@ -478,7 +456,7 @@ const handleUpdatePassword = (formData) => {
                         </button>
                     </div>
                 </section>
-            </Form>
+            </VForm>
             </ClientOnly>
         </div>
     </div>

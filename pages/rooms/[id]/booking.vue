@@ -6,27 +6,6 @@ useSeoMeta({ title: '預約房型' });
 
 import { Icon } from '@iconify/vue';
 
-import { Field, Form, ErrorMessage, defineRule, configure } from "vee-validate";
-
-import { setLocale, localize } from '@vee-validate/i18n';
-
-import { required, email, min } from '@vee-validate/rules';
-
-import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
-
-defineRule('required', required);
-defineRule('email', email);
-defineRule('min', min);
-
-configure({
-    
-    validateOnInput: true,
-    generateMessage: localize({ zhTW })
-
-});
-
-setLocale('zhTW');
-
 //
 
 import useBookingStore from '@/stores/booking';
@@ -79,7 +58,7 @@ const {
 
 } = useAddress();
 
-const { translateMessage, phoneFormat } = useValidation();
+const { translateMessage } = useValidation();
 
 const userInfo = ref({ address: {} });
 
@@ -164,7 +143,7 @@ const confirmBooking = () => {
             確認訂房資訊
             </h1>
         </button>
-        <Form v-slot="{ errors, meta }" @submit="confirmBooking">
+        <VForm v-slot="{ errors, meta }" @submit="confirmBooking">
             <div class="row gap-10 gap-md-0">
                 <div class="col-12 col-md-7">
                     <section>
@@ -238,7 +217,7 @@ const confirmBooking = () => {
                                     for="name"
                                     class="form-label fs-8 fs-md-7 fw-bold"
                                 >姓名</label>
-                                <Field
+                                <VField
                                     id="name" name="name" type="text"
                                     class="form-control p-4 fs-8 fs-md-7 rounded-3"
                                     :class="{ 'is-invalid': errors['name'] }"
@@ -255,13 +234,13 @@ const confirmBooking = () => {
                                     for="phone"
                                     class="form-label fs-8 fs-md-7 fw-bold"
                                 >手機號碼</label>
-                                <Field
+                                <VField
                                     id="phone" name="phone" type="tel"
                                     class="form-control p-4 fs-8 fs-md-7 rounded-3"
                                     :class="{ 'is-invalid': errors['phone'] }"
                                     placeholder="請輸入您的手機"
                                     v-model.trim="userInfo.phone"
-                                    :rules="phoneFormat"
+                                    rules="phoneFormat"
                                 />
                                 <ErrorMessage name="phone" v-slot="{ message }">
                                     <p class="invalid-feedback mt-3 mb-0">{{ translateMessage(message, 'phone') }}</p>
@@ -272,7 +251,7 @@ const confirmBooking = () => {
                                     for="email"
                                     class="form-label fs-8 fs-md-7 fw-bold"
                                 >電子信箱</label>      
-                                <Field
+                                <VField
                                     id="email" name="email" type="email"
                                     class="form-control p-4 fs-8 fs-md-7 rounded-3"
                                     :class="{ 'is-invalid': errors['email'] }"
@@ -308,7 +287,7 @@ const confirmBooking = () => {
                                         </option>
                                     </select>
                                 </div>
-                                <Field
+                                <VField
                                     id="address" name="address" type="text"
                                     class="form-control p-4 fs-8 fs-md-7 rounded-3"
                                     :class="{ 'is-invalid': errors['address'] }"
@@ -470,7 +449,7 @@ const confirmBooking = () => {
                     </div>
                 </div>
             </div>
-        </Form>
+        </VForm>
     </div>
 </section>
 

@@ -6,33 +6,9 @@ useSeoMeta({ title: '註冊會員' });
 
 import { Icon } from '@iconify/vue';
 
-import { Field, Form, ErrorMessage, defineRule, configure } from "vee-validate";
-
-import { required, confirmed, email, min } from '@vee-validate/rules';
-
-import { setLocale, localize } from '@vee-validate/i18n';
-
-import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
-
 //
 
 import useAuthStore from '@/stores/auth';
-
-//
-
-defineRule('confirmed', confirmed);
-defineRule('required', required);
-defineRule('email', email);
-defineRule('min', min);
-
-configure({
-    
-    validateOnInput: true,
-    generateMessage: localize({ zhTW })
-
-});
-
-setLocale('zhTW');
 
 // composables
 
@@ -43,12 +19,7 @@ const {
 
 } = useAddress();
 
-const {
-    
-    translateMessage,
-    phoneFormat, passwordFormat
-
-} = useValidation();
+const { translateMessage } = useValidation();
 
 // pinia store
 
@@ -179,7 +150,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
     </div>
 
     <div class="fs-8 fs-md-7 mb-4">
-        <Form v-slot="{ errors }" @submit="handleSignUpProcess">
+        <VForm v-slot="{ errors }" @submit="handleSignUpProcess">
             <div v-show="signUpStep === 1">
                 <div class="mb-4">
                     <label
@@ -187,7 +158,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         class="text-neutral-100 fw-bold mb-2">
                         電子信箱
                     </label>
-                    <Field
+                    <VField
                         id="email" name="email" type="text"
                         class="form-control p-4 border-neutral-300
                         text-neutral-600 fw-medium"
@@ -209,13 +180,13 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         class="text-neutral-100 fw-bold mb-2">
                         密碼
                     </label>
-                    <Field
+                    <VField
                         id="password" name="password" type="password"
                         class="form-control p-4 border-neutral-300 text-neutral-600 fw-medium"
                         placeholder="請輸入密碼"
                         v-model.trim="signUpFormData.password"
                         :class="{ 'is-invalid': errors['password'] }"
-                        :rules="passwordFormat" />
+                        rules="passwordFormat" />
                     <ErrorMessage
                         name="password"
                         v-slot="{ message }">
@@ -230,7 +201,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         class="text-neutral-100 fw-bold mb-2">
                         確認密碼
                     </label>
-                    <Field
+                    <VField
                         id="confirmPassword" name="confirmPassword" type="password"
                         class="form-control p-4 border-neutral-300 text-neutral-600 fw-medium"
                         placeholder="請再輸入一次密碼"
@@ -262,7 +233,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         class="text-neutral-100 fw-bold mb-2">
                         姓名
                     </label>
-                    <Field
+                    <VField
                         id="name" name="name" type="text"
                         class="form-control border-neutral-300 rounded-3
                         p-4 text-neutral-600 fw-medium"
@@ -284,14 +255,14 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                         class="text-neutral-100 fw-bold mb-2">
                         手機號碼
                     </label>
-                    <Field
+                    <VField
                         id="phone" name="phone" type="tel"
                         class="form-control border-neutral-300
                         p-4 rounded-3 text-neutral-600 fw-medium"
                         placeholder="請輸入手機號碼"
                         v-model="signUpFormData.phone"
                         :class="{ 'is-invalid': errors['phone'] }"
-                        :rules="phoneFormat" />
+                        rules="phoneFormat" />
                     <ErrorMessage class="invalid-feedback my-3" name="phone" />
                 </div>
                 <div class="mb-4">
@@ -384,7 +355,7 @@ const handleSignUpProcess = (signupData, { resetForm }) => {
                     完成註冊
                 </button>
             </div>
-        </Form>
+        </VForm>
     </div>
 
     <p class="fs-8 fs-md-7 mb-0">

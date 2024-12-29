@@ -4,32 +4,7 @@ useSeoMeta({ title: '會員登入' });
 
 //
 
-import { Form, Field, ErrorMessage, defineRule, configure } from 'vee-validate';
-
-import { required, email, min } from '@vee-validate/rules';
-
-import { setLocale, localize } from '@vee-validate/i18n';
-
-import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
-
-//
-
 import useAuthStore from '@/stores/auth';
-
-//
-
-defineRule('required', required);
-defineRule('email', email);
-defineRule('min', min);
-
-configure({
-
-    validateOnInput: true,
-    generateMessage: localize({ zhTW })
-
-});
-
-setLocale('zhTW');
 
 // composables
 
@@ -88,14 +63,14 @@ const handleLoginProcess = (loginData, { resetForm }) => {
         <h1 class="text-neutral-100 fw-bold">立即開始旅程</h1>
     </div>
     <div class="fs-8 fs-md-7 mb-4">
-        <Form v-slot="{ errors, meta }" @submit="handleLoginProcess">
+        <VForm v-slot="{ errors, meta }" @submit="handleLoginProcess">
             <div class="mb-4">
                 <label
                     for="email"
                     class="text-neutral-100 fw-bold mb-2">
                     電子信箱
                 </label>
-                <Field
+                <VField
                     id="email" name="email" type="email"
                     class="form-control p-4 border-neutral-300
                     text-neutral-600 fw-medium"
@@ -115,7 +90,7 @@ const handleLoginProcess = (loginData, { resetForm }) => {
                     class="text-neutral-100 fw-bold mb-2">
                     密碼
                 </label>
-                <Field
+                <VField
                     id="password" name="password" type="password"
                     class="form-control p-4 border-neutral-300
                     text-neutral-600 fw-medium"
@@ -151,7 +126,7 @@ const handleLoginProcess = (loginData, { resetForm }) => {
                 type="submit" :disabled="!meta.valid || isPending">
                 會員登入
             </button>
-        </Form>
+        </VForm>
     </div>
     <p class="fs-8 fs-md-7 mb-0">
         <span class="me-2 text-neutral-100 fw-medium">沒有會員嗎？</span>

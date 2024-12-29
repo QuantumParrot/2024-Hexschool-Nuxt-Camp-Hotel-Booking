@@ -2,26 +2,6 @@
 
 import { Icon } from '@iconify/vue';
 
-import { Form, Field, ErrorMessage, defineRule, configure } from 'vee-validate';
-
-import { required, regex } from '@vee-validate/rules';
-
-import { setLocale, localize } from '@vee-validate/i18n';
-
-import zhTW from '@vee-validate/i18n/dist/locale/zh_TW.json';
-
-defineRule('required', required);
-defineRule('regex', regex);
-
-configure({
-
-    validateOnInput: true,
-    generateMessage: localize({ zhTW })
-
-});
-
-setLocale('zhTW');
-
 //
 
 import useAdminStore from '@/stores/admin';
@@ -269,10 +249,10 @@ const handleDeleteProcess = (id) => {
         </div>
         <div class="col-md-6">
             <div class="alert bg-neutral-300">
-                <Form v-slot="{ errors, meta, resetForm }" @submit="handleUpdateProcess" ref="form">
+                <VForm v-slot="{ errors, meta, resetForm }" @submit="handleUpdateProcess" ref="form">
                     <div class="mb-4">
                         <label for="title" class="form-label">消息標題</label>
-                        <Field
+                        <VField
                             id="title" name="title" type="text"
                             class="form-control" :class="{ 'is-invalid': errors['title'] }"
                             placeholder="請輸入消息標題"
@@ -287,7 +267,7 @@ const handleDeleteProcess = (id) => {
                     </div>
                     <div class="mb-4">
                         <label for="description" class="form-label">消息內容</label>
-                        <Field
+                        <VField
                             as="textarea"
                             id="description" name="description" type="text"
                             class="form-control" :class="{ 'is-invalid': errors['description'] }"
@@ -304,7 +284,7 @@ const handleDeleteProcess = (id) => {
                     </div>
                     <div class="mb-4">
                         <label for="image" class="form-label">消息圖片</label>
-                        <Field
+                        <VField
                             as="textarea"
                             id="image" name="image" type="text"
                             class="form-control" :class="{ 'is-invalid': errors['image'] }"
@@ -334,7 +314,7 @@ const handleDeleteProcess = (id) => {
                             確認送出
                         </button>
                     </div>
-                </Form>
+                </VForm>
             </div>
         </div>
     </div>
