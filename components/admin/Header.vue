@@ -5,9 +5,11 @@
 
 <nav class="navbar navbar-expand-lg bg-primary-300">
     <div class="container-fluid px-3 py-4 px-md-20 py-md-6 gap-6">
+        <NuxtLink to="/">
         <h1 class="mb-0 me-6">
             <img src="/images/logo-primary.svg" alt="Enjoyment Luxury Hotel Logo">
         </h1>
+        </NuxtLink>
         <button
             class="navbar-toggler" type="button"
             data-bs-toggle="collapse" data-bs-target="#admin-nav"
