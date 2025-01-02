@@ -11,7 +11,7 @@ import useUserStore from '@/stores/user';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
-    const { isHydrating, payload } = useNuxtApp();
+    const { payload } = useNuxtApp();
 
     const authStore = useAuthStore();
     const userStore = useUserStore();
@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const { userId } = storeToRefs(userStore);
     const { isLoggedIn } = storeToRefs(authStore);
 
-    if (import.meta.client && isHydrating && payload.serverRendered && isLoggedIn.value) return;
+    if (import.meta.client && payload.serverRendered && isLoggedIn.value) return;
 
     /***/
 
@@ -38,6 +38,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         /* 身份驗證成功 */
 
         if (currentDir === 'account') {
+
+            await userStore.getUserData();
 
             return navigateTo({
                 
