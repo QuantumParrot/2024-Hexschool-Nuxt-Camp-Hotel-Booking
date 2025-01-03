@@ -1,7 +1,5 @@
 <script setup>
 
-const route = useRoute();
-
 const event = useRequestEvent();
 
 definePageMeta({ layout: false });
