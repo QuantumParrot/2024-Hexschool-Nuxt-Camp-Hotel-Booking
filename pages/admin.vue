@@ -1,6 +1,6 @@
 <script setup>
 
-definePageMeta({ layout: 'admin', middleware: ['auth'] });
+definePageMeta({ layout: 'admin' });
 
 //
 

@@ -1,7 +1,5 @@
 <script setup>
 
-definePageMeta({ middleware: ['auth'] })
-
 // pinia
 
 import useAuthStore from '@/stores/auth';
@@ -11,40 +9,7 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 
 const { logout } = authStore;
-const { userData } = storeToRefs(userStore);
-
-// composables
-
-const router = useRouter();
-
-const route = useRoute();
-
-//
-
-onMounted(() => {
-
-    if (route.name === 'user-userId') {
-        
-        router.replace({
-
-            name: 'user-userId-profile',
-            params: { userId: route.params.userId }
-            
-        });
-    
-    };
-
-});
-
-onMounted(async () => {
-
-    if (!userData.value._id) {
-
-        await userStore.getUserData();
-
-    }
-
-});
+const { username, userId } = storeToRefs(userStore);
 
 </script>
 
@@ -69,7 +34,7 @@ onMounted(async () => {
                 <img class="avatar" src="/images/avatar-6.png" alt="avatar">
                 <div class="w-100 d-flex justify-content-between gap-4">
                     <ClientOnly>
-                        <h2 class="h1 text-neutral-100 fw-bold mb-0">Hello，{{ userData.name || '訪客' }}</h2>
+                        <h2 class="h1 text-neutral-100 fw-bold mb-0">Hello，{{ username || '訪客' }}</h2>
                     </ClientOnly>
                     <button
                         class="d-md-none align-self-stretch btn btn-primary-600
@@ -85,24 +50,20 @@ onMounted(async () => {
         <div class="container">
             <ul class="nav mb-10 mb-md-20 fw-bold">
                 <li class="nav-item">
-                    <ClientOnly>
                     <NuxtLink
-                        :to="`/user/${route.params.userId}/profile`"
+                        :to="`/user/${userId}/profile`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         個人資料
                     </NuxtLink>
-                    </ClientOnly>
                 </li>
                 <li class="nav-item">
-                    <ClientOnly>
                     <NuxtLink
-                        :to="`/user/${route.params.userId}/order`"
+                        :to="`/user/${userId}/order`"
                         exact-active-class="text-primary-600"
                         class="nav-link px-6 py-4 text-white position-relative">
                         我的訂單
                     </NuxtLink>
-                    </ClientOnly>
                 </li>
             </ul>
             <NuxtPage />

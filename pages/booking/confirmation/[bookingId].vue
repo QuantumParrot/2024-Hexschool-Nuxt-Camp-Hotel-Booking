@@ -2,8 +2,6 @@
 
 useSeoMeta({ title: '預約成功' });
 
-definePageMeta({ middleware: ['auth'] });
-
 //
 
 import { Icon } from '@iconify/vue';
@@ -11,6 +9,16 @@ import { Icon } from '@iconify/vue';
 import useUserStore from '@/stores/user';
 import useCacheStore from '@/stores/cache';
 import useBookingStore from '@/stores/booking';
+
+definePageMeta({
+
+    middleware: (to, from) => {
+
+        if (from.name !== 'rooms-id-booking') { return false; }
+
+    }
+
+})
 
 const userStore = useUserStore();
 const cacheStore = useCacheStore();
@@ -40,17 +48,6 @@ const days = computed(() => {
     }
 
     return 0;
-
-});
-
-onMounted(async() => {
-
-    if (!bookingCache.value._id) {
-
-        const { result } = await bookingStore.getOrder(bookingId.value);
-        cacheStore.$patch({ bookingCache: result });
-
-    }
 
 });
 
@@ -89,12 +86,14 @@ onMounted(async() => {
                     <h2 class="text-neutral-100 fs-7 fs-md-5 fw-bold mb-6 mb-md-10">
                     立即查看您的訂單記錄
                     </h2>
+                    <ClientOnly>
                     <NuxtLink
                         :to="{ name: 'user-userId-order', params: { userId } }"
                         class="btn btn-primary-600 px-md-15 py-4 border-0 rounded-3
                         text-neutral-100 fw-bold">
                         前往我的訂單
                     </NuxtLink>
+                    </ClientOnly>
                 </div>
 
                 <hr class="my-10 my-md-20 opacity-100 text-neutral-300">

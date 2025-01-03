@@ -7,7 +7,6 @@ definePageMeta({
     layout: 'account',
     
     middleware: [
-        'auth',
         (to, from) => {
 
             if (import.meta.server) return;
@@ -25,6 +24,25 @@ definePageMeta({
 
         }
     ]
+
+});
+
+const route = useRoute();
+
+onMounted(() => {
+
+    /* 處理無畫面渲染的路由 */
+
+    if (route.name === 'account') {
+        
+        navigateTo('account/login', {
+            
+            replace: true,
+            redirectCode: 302
+    
+        });
+
+    }
 
 });
 

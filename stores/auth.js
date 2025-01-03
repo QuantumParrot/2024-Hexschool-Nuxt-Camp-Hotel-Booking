@@ -26,7 +26,7 @@ export default defineStore("auth", () => {
 
         /***/
 
-        if (import.meta.env.DEV) { console.trace('pinia store: check auth'); }
+        if (import.meta.env.DEV) { console.log('pinia store: check auth'); }
 
         /***/
 
@@ -80,6 +80,8 @@ export default defineStore("auth", () => {
 
         const token = useCookie('nuxt-camp-hotel-booking-auth');
         token.value = res.token;
+
+        isLoggedIn.value = true;
 
         showToastAlert({ icon: 'success', text: '登入成功' });
 
